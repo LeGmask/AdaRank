@@ -1,28 +1,12 @@
-.metadata/
-bin/
-.settings
-*.class
-.loadpath
-.classpath
-tmp/
-*.tmp
-.settings/
-*.swp
-*.bak
-*.jar
-*.zip
-local.properties
-.factorypath
-src-gen/
-*.ali
+# Object file
 *.o
+
+# Ada Library Information
+*.ali
+
+# Build dir
+build/
+
+# gnatstudio files
+*.cgpr
 gnatinspect.db*
-*.xml
-[bB]~*
-[bB]__*
-*~
-[Dd]ebug/
-[Bb]in/
-[Oo]bj/
-[Ll]og/
-.vs/
