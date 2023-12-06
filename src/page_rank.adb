@@ -7,8 +7,33 @@ with matrice;
 
 procedure Page_Rank is
 
-   package T_Matrice_Float is new matrice(Float,Standard."+",Standard."*");
-   use T_Matrice_Float;
+   procedure M_Plein(reseau: Unbounded_String;alpha : Float;k : Integer;eps : Float; prefixe:Unbounded_String) is
+      package T_Matrice_Float is new matrice(Float,Standard."+",Standard."*");
+      use T_Matrice_Float;
+
+      File : Ada.Text_IO.File_Type;
+
+      i : Integer;
+      j : Integer;
+      n : Integer;
+
+
+   begin
+      -- Charger le graphe dans une matrice d'adjacence pondérée
+      open (File, In_File, To_String(reseau));
+      Get (File, n);
+      
+
+      --! Stocker dans H chaque référencement
+      while not End_Of_file (File) loop
+         Get (File, i);
+         Get (File, j);
+
+      end loop;
+      Close (File);
+      --! Pondérer les lignes
+
+   end M_Plein;
 
    ALPHA_INVALIDE : exception;
    EPS_INVALIDE : exception;
@@ -17,7 +42,6 @@ procedure Page_Rank is
    EMPLACEMENT_INVALIDE : exception;
    SYNTAXE : exception;
 
-   File : Ada.Text_IO.File_Type;
 
    reseau : Unbounded_String;
    alpha : Float := 0.85;
@@ -27,9 +51,6 @@ procedure Page_Rank is
    plein : Boolean := True;
 
    i : Integer := 1;
-   j : Integer;
-
-   n : Integer;
 
 begin
    -- Gérer les arguments avec lesquels le programme est lancé
@@ -76,22 +97,9 @@ begin
    end loop;
    
    if plein then
-      -- Charger le graphe dans une matrice d'adjacence pondérée
-      open (File, In_File, To_String(reseau));
-      Get (File, n);
-      
-
-      --! Stocker dans H chaque référencement
-      while not End_Of_file (File) loop
-         Get (File, i);
-         Get (File, j);
-
-      end loop;
-      Close (File);
-
-      --! Pondérer les lignes
-
-
+      M_Plein(reseau,alpha,k,eps,prefixe);
+   else
+      null;
    end if;
 
    --! Vérifier si les arguments sont valides
