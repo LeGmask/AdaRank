@@ -4,8 +4,12 @@ with Ada.Integer_Text_IO;	use Ada.Integer_Text_IO;
 with Ada.Command_line;		use Ada.Command_line;
 with Ada.Strings.Unbounded; use Ada.Strings.Unbounded;
 with Ada.Directories;
+with matrice;
 
 procedure PageRank is
+
+   package T_Matrice_Float is new matrice(Float,Standard."+",Standard."*");
+   use T_Matrice_Float;
 
 
    File : Ada.Text_IO.File_Type;
@@ -17,12 +21,16 @@ procedure PageRank is
    prefixe : Unbounded_String := To_Unbounded_String("output");
    plein : Boolean := True;
    valide : Boolean := True;
+
    i : Integer := 1;
+   j : Integer;
+
+   n : Integer;
 
 begin
-   --! Gérer les arguments avec lesquels le programme est lancé
+   -- GÃ©rer les arguments avec lesquels le programme est lancÃ©
 
-   --! Récupérer les arguments fournis
+   --! RÃ©cupÃ©rer les arguments fournis
    while i<(Argument_Count) loop
       if Argument(i)(1)='-' and then Length(To_Unbounded_String(Argument(i)))=2 then
          case Argument(i)(2) is
@@ -47,13 +55,29 @@ begin
    end loop;
    reseau := To_Unbounded_String(Argument(i));
 
-   --! Vérifier si les arguments sont valides
+   --! VÃ©rifier si les arguments sont valides
    if alpha>1.0 or else alpha<0.0 or else k<0 or else eps<0.0 or else not(valide) or else not(Ada.Directories.Exists(To_String(reseau))) then
-      Put_Line("Un argument a une valeur illégale, veuillez relire votre appel");
+      Put_Line("Un argument a une valeur illÃ©gale, veuillez relire votre appel");
       valide := False;
    end if;
 
+   if valide and then plein then
+      -- Charger le graphe dans une matrice d'adjacence pondÃ©rÃ©e
+      open (File, In_File, To_String(reseau));
+      Get (File, n);
 
+      --! Stocker dans H chaque rÃ©fÃ©rencement
+      while not End_Of_file (File) loop
+         Get (File, i);
+         Get (File, j);
+
+      end loop;
+      Close (File);
+
+      --! PondÃ©rer les lignes
+
+
+   end if;
 
 
 
