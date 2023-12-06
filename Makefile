@@ -7,7 +7,7 @@ clean:
 
 test:
 	mkdir -p build
-	cd build/ && gnatmake -gnatwa -gnata  -aI../src/ -g ../tests/tests.adb
+	cd build/ && gnatmake -gnatwa -gnata -d -aI../src/ -g ../tests/tests.adb
 
 run:
 	./build/page_rank
