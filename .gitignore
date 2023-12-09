@@ -10,3 +10,6 @@ build/
 # gnatstudio files
 *.cgpr
 gnatinspect.db*
+
+# networks files
+networks/

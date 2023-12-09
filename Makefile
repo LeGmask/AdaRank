@@ -9,9 +9,12 @@ test:
 	mkdir -p build
 	cd build/ && gnatmake -gnatwa -gnata -d -aI../src/ -g ../tests/tests.adb
 
+# pass arguments through ARGS="arg1 arg2" make run
 run:
-	./build/page_rank
+	./build/page_rank $(ARGS)
 
 run_test:
 	./build/tests
 
+%:
+	@:
