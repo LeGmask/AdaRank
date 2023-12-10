@@ -51,15 +51,16 @@ procedure Page_Rank is
    begin
       -- Charger le graphe dans une matrice d'adjacence pondérée
       Open (File, In_File, To_String (Reseau));
+      Get (File, I); -- Relecture de N déjà récupéré
       Init (H, 0.0);
 
       --! Stocker dans H chaque référencement
       Init (Sortants, 0.0);
-      while not End_Of_file (File) loop
+      while not End_Of_File (File) loop
          Get (File, I);
          Get (File, J);
-         H (I,J) := H (I,J) + 1.0;
-         Sortants (I,1) := Sortants (I,1) + 1.0;
+         H (I+1, J+1) := H (I+1, J+1) + 1.0;
+         Sortants (I+1, 1) := Sortants (I+1, 1) + 1.0;
       end loop;
       Close (File);
 
