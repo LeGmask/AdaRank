@@ -3,7 +3,6 @@ with Ada.Float_Text_IO;	                use Ada.Float_Text_IO;
 with Ada.Integer_Text_IO;	             use Ada.Integer_Text_IO;
 with Ada.Command_Line;                  use Ada.Command_Line;
 with Ada.Strings.Unbounded;             use Ada.Strings.Unbounded;
-with Ada.Numerics.Elementary_Functions; use Ada.Numerics.Elementary_Functions;
 with Ada.Directories;
 with Matrice;
 
@@ -24,16 +23,18 @@ procedure Page_Rank is
 
       procedure Afficher_Matrice is new Afficher(Put_Float);
 
-      function Norme_Frobenius(A: in T_Matrice) return Float is
-         Norme : Float := 0.0;
+      function Norme(A: in T_Matrice) return Float is
+         Max_Abs : Float := Abs (A (1, 1));
       begin
          for I in A'Range(1) loop
             for J in A'Range(2) loop
-            Norme := Norme + A(I,J) * A(I,J);
+            if Abs (A (I, J)) > Max_Abs then
+               Max_Abs := Abs (A (I, J));
+            end if;
             end loop;
          end loop;
-         return Sqrt(Norme);
-      end Norme_Frobenius;
+         return Max_Abs;
+      end Norme;
 
       File : Ada.Text_IO.File_Type;
 
@@ -96,7 +97,7 @@ procedure Page_Rank is
       Init (Pi_avant, 1.0 / float(N));
       Pi := Pi_avant * G;
       while (I < k) 
-        and then Norme_Frobenius( Pi + (Pi_avant * (-1.0)) ) > Eps loop
+        and then Norme (Pi + (Pi_avant * (-1.0))) > Eps loop
          Pi_avant := Pi;
          Pi := Pi * G;
          I := I + 1;
