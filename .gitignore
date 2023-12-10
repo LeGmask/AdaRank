@@ -12,4 +12,5 @@ build/
 gnatinspect.db*
 
 # networks files
-networks/
+networks/*
+!networks/test.net
