@@ -30,13 +30,20 @@ procedure Test_Graphe is
       Sortants : T_Matrice (1 .. N, 1 .. 1);
     begin
       Lire_Graphe (File, G, Sortants);
-      Put_Line ("Graphe :");
-      Afficher_Matrice (G);
-      Put_Line ("Sortants :");
-      Afficher_Matrice (Sortants);
+
+      pragma Assert (
+        G(1, 1) = 0.0 and G(1, 2) = 1.0 and G(1, 3) = 1.0 and Sortants(1, 1) = 2.0 and
+        G(2, 1) = 0.0 and G(2, 2) = 0.0 and G(2, 3) = 1.0 and Sortants(2, 1) = 1.0 and
+        G(3, 1) = 0.0 and G(3, 2) = 1.0 and G(3, 3) = 0.0 and Sortants(3, 1) = 1.0
+      );
+
       Ponderer_Graphe (G, Sortants);
-      Put_Line ("Graphe pondéré :");
-      Afficher_Matrice (G);
+      
+      pragma Assert (
+        G(1, 1) = 0.0 and G(1, 2) = 0.5 and G(1, 3) = 0.5 and
+        G(2, 1) = 0.0 and G(2, 2) = 0.0 and G(2, 3) = 1.0 and
+        G(3, 1) = 0.0 and G(3, 2) = 1.0 and G(3, 3) = 0.0
+      );
     end;
   end Tester_Graphe;
 
