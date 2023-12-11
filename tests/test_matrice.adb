@@ -4,7 +4,7 @@ with Matrice;
 procedure Test_Matrice is
   package T_Matrice_Int is new Matrice
    (T_Valeur => Integer, Neutre => 0, "+" => Standard."+",
-    "*"      => Standard."*");
+    "*"      => Standard."*", "<" => Standard."<");
   use T_Matrice_Int;
 
   procedure Tester_Init is
