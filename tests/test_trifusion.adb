@@ -22,7 +22,11 @@ procedure Test_Trifusion is
     Ordre : T_Matrice(1..1,1..A'Length(2));
 
 begin
+    for I in A'Range(2) loop
+        Ordre(1,I) := Float (I);
+    end loop;
     Tri(A,Ordre);
+    -- Afficher_Matrice(Ordre);
     -- Afficher_Matrice(A);
     pragma Assert ( 0.00001 > abs (A(1,1)-10.0)
     and 0.00001 > abs (A(1,2)-9.0)

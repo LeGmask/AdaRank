@@ -6,6 +6,6 @@ generic
 
 package Trifusion is
 
-    procedure Tri(Vecteur: in out T_Matrice; Ordre: out T_Matrice);
+    procedure Tri(Vecteur: in out T_Matrice; Ordre: in out T_Matrice);
     
 end Trifusion;
