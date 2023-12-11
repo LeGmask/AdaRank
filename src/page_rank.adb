@@ -160,7 +160,7 @@ begin
       begin
          Lire_Graphe (File, H, Sortants);
          Close (File);
-
+         Ponderer_Graphe (H, Sortants);
          M_Plein (Alpha, K, Eps, Prefixe, N, H, Sortants);
       end;
    else
