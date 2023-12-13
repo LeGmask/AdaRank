@@ -19,12 +19,12 @@ procedure Test_Trifusion is
     --      Put (E);
     --  end Put_Element;
 
-    --  package Trifusion_Float is new Trifusion
-    --     (Matrice_Float, Matrice_Integer, "<");
-    --  use Trifusion_Float;
-
     --  procedure Afficher_Matrice is new Matrice_Float.Afficher (Put_Element);
     --  procedure Afficher_Matrice is new Matrice_Integer.Afficher (Put_Element);
+
+    package Trifusion_Float is new Trifusion
+       (Matrice_Float, Matrice_Integer, "<");
+    use Trifusion_Float;
 
     A     : Matrice_Float.T_Matrice :=
        (1 => (10.0, 7.0, 4.0, 8.0, 1.0, 2.0, 6.0, 9.0, 3.0, 5.0));
