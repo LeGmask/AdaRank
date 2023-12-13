@@ -14,3 +14,7 @@ gnatinspect.db*
 # networks files
 networks/*
 !networks/test.net
+
+# output files
+*.pr
+*.prw

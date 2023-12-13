@@ -7,6 +7,7 @@ with Ada.Directories;
 with Matrice;
 with Graphe;
 with Trifusion;
+with Export;
 
 procedure Page_Rank is
    package Matrice_Float is new Matrice
@@ -17,11 +18,27 @@ procedure Page_Rank is
 
    package Graphe_Float is new Graphe (Matrice_Float, 1.0, "/");
    use Graphe_Float;
-   package Tri_Fusion is new Trifusion(Matrice_Float , Matrice_Integer, "<");
+   package Tri_Fusion is new Trifusion (Matrice_Float, Matrice_Integer, "<");
+
+   package Export_PageRank is new Export
+     (Matrice_Pi => Matrice_Float, Matrice_Ordre => Matrice_Integer);
+   use Export_PageRank;
+
+   procedure Put_Element (Fichier : File_Type; E : Float) is
+   begin
+      Put (Fichier, E, 1);
+   end Put_Element;
+   procedure Put_Element (Fichier : File_Type; E : Integer) is
+   begin
+      Put (Fichier, E, 1);
+   end Put_Element;
+
+   procedure Sauver is new Export_Resultats (Put_Element, Put_Element);
 
    procedure M_Plein
-     (Alpha : Float; K : Integer; Eps : Float; Prefixe : Unbounded_String;
-      N     : Integer; H, Sortants : T_Matrice)
+     (Alpha   : in     Float; K : in Integer; Eps : in Float;
+      Prefixe : in Unbounded_String; N : in Integer; H, Sortants : T_Matrice;
+      Pi      :    out T_Matrice; Ordre : out Matrice_Integer.T_Matrice)
    is
 
       procedure Put_Element (E : Float) is
@@ -55,8 +72,7 @@ procedure Page_Rank is
       G        : T_Matrice (1 .. N, 1 .. N);
       Attila   : T_Matrice (1 .. N, 1 .. N);
       Pi_avant : T_Matrice (1 .. 1, 1 .. N);
-      Pi       : T_Matrice (1 .. 1, 1 .. N);
-      Ordre    : Matrice_Integer.T_Matrice (1 .. 1, 1 .. N);
+      --  Ordre    : Matrice_Integer.T_Matrice (1 .. 1, 1 .. N);
 
    begin
       -- Charger le graphe dans une matrice d'adjacence pondérée
@@ -88,12 +104,11 @@ procedure Page_Rank is
 
       -- Afficher_Matrice (Pi);
       for I in 1 .. N loop
-         Ordre (1, I) := I-1;
+         Ordre (1, I) := I - 1;
       end loop;
-      Tri_fusion.Tri(Pi, Ordre);
+      Tri_Fusion.Tri (Pi, Ordre);
       -- Afficher_Matrice (Ordre);
       -- Afficher_Matrice (Pi);
-      
 
    end M_Plein;
 
@@ -176,11 +191,14 @@ begin
       declare
          H        : T_Matrice (1 .. N, 1 .. N);
          Sortants : T_Matrice (1 .. N, 1 .. 1);
+         Pi       : T_Matrice (1 .. 1, 1 .. N);
+         Ordre    : Matrice_Integer.T_Matrice (1 .. 1, 1 .. N);
       begin
          Lire_Graphe (File, H, Sortants);
          Close (File);
          Ponderer_Graphe (H, Sortants);
-         M_Plein (Alpha, K, Eps, Prefixe, N, H, Sortants);
+         M_Plein (Alpha, K, Eps, Prefixe, N, H, Sortants, Pi, Ordre);
+         Sauver (Pi, Ordre, N, K, Alpha, To_String (Prefixe));
       end;
    else
       null;
