@@ -3,8 +3,6 @@ generic
 
   Neutre : in T_Valeur;
 
-  with function "<"
-   (Gauche : in T_Valeur; Right : in T_Valeur) return Boolean;
   with function "+"
    (Gauche : in T_Valeur; Right : in T_Valeur) return T_Valeur;
   with function "*"

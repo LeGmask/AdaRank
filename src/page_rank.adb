@@ -9,7 +9,7 @@ with Graphe;
 
 procedure Page_Rank is
    package Matrice_Float is new Matrice
-     (Float, 0.0, Standard."<", Standard."+", Standard."*");
+     (Float, 0.0, Standard."+", Standard."*");
    use Matrice_Float;
    package Graphe_Float is new Graphe (Matrice_Float, 1.0, "/");
    use Graphe_Float;
