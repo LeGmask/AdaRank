@@ -88,7 +88,7 @@ procedure Page_Rank is
 
       -- Afficher_Matrice (Pi);
       for I in 1 .. N loop
-         Ordre (1, I) := I;
+         Ordre (1, I) := I-1;
       end loop;
       Tri_fusion.Tri(Pi, Ordre);
       -- Afficher_Matrice (Ordre);
@@ -201,7 +201,7 @@ exception
    when EMPLACEMENT_INVALIDE =>
       Put_Line
         ("Emplacement du fichier invalide, veuillez relire votre appel");
-   when others               =>
-      null;
+   -- when others               =>
+   --   null;
 
 end Page_Rank;
