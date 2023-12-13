@@ -6,25 +6,35 @@ with Ada.Strings.Unbounded; use Ada.Strings.Unbounded;
 with Ada.Directories;
 with Matrice;
 with Graphe;
+with Trifusion;
 
 procedure Page_Rank is
    package Matrice_Float is new Matrice
      (Float, 0.0, Standard."+", Standard."*");
    use Matrice_Float;
+   package Matrice_Integer is new Matrice
+     (Integer, 0, Standard."+", Standard."*");
+
    package Graphe_Float is new Graphe (Matrice_Float, 1.0, "/");
    use Graphe_Float;
+   package Tri_Fusion is new Trifusion(Matrice_Float , Matrice_Integer, "<");
 
    procedure M_Plein
-     (Alpha : Float; k : Integer; Eps : Float; Prefixe : Unbounded_String;
+     (Alpha : Float; K : Integer; Eps : Float; Prefixe : Unbounded_String;
       N     : Integer; H, Sortants : T_Matrice)
    is
 
-      procedure Put_Float (F : Float) is
+      procedure Put_Element (E : Float) is
       begin
-         Put (F);
-      end Put_Float;
+         Put (E);
+      end Put_Element;
+      procedure Put_Element (E : Integer) is
+      begin
+         Put (E);
+      end Put_Element;
 
-      procedure Afficher_Matrice is new Afficher (Put_Float);
+      procedure Afficher_Matrice is new Matrice_Float.Afficher (Put_Element);
+      procedure Afficher_Matrice is new Matrice_Integer.Afficher (Put_Element);
 
       function Norme (A : in T_Matrice) return Float is
          Max_Abs : Float := abs (A (1, 1));
@@ -46,6 +56,7 @@ procedure Page_Rank is
       Attila   : T_Matrice (1 .. N, 1 .. N);
       Pi_avant : T_Matrice (1 .. 1, 1 .. N);
       Pi       : T_Matrice (1 .. 1, 1 .. N);
+      Ordre    : Matrice_Integer.T_Matrice (1 .. 1, 1 .. N);
 
    begin
       -- Charger le graphe dans une matrice d'adjacence pondérée
@@ -69,13 +80,21 @@ procedure Page_Rank is
       I := 0;
       Init (Pi_avant, 1.0 / Float (N));
       Pi := Pi_avant * G;
-      while (I < k) and then Norme (Pi + (Pi_avant * (-1.0))) > Eps loop
+      while (I < K) and then Norme (Pi + (Pi_avant * (-1.0))) > Eps loop
          Pi_avant := Pi;
          Pi       := Pi * G;
          I        := I + 1;
       end loop;
 
-      Afficher_Matrice (Pi);
+      -- Afficher_Matrice (Pi);
+      for I in 1 .. N loop
+         Ordre (1, I) := I;
+      end loop;
+      Tri_fusion.Tri(Pi, Ordre);
+      -- Afficher_Matrice (Ordre);
+      -- Afficher_Matrice (Pi);
+      
+
    end M_Plein;
 
    ALPHA_INVALIDE       : exception;
