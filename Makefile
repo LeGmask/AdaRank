@@ -4,7 +4,7 @@ make:
 
 clean:
 	cd build/ && gnatclean ../src/*.adb && gnatclean ../tests/*.adb
-
+	rm -f *.prw *.pr
 test:
 	mkdir -p build
 	cd build/ && gnatmake -gnatwa -gnata -d -aI../src/ -g ../tests/tests.adb
