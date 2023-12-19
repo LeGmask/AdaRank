@@ -1,41 +1,59 @@
 generic
   type T_Valeur is private; -- Type des valeurs de la matrice
 
-  Neutre : in T_Valeur; -- Neutre pour l'addition
+  Zero : in T_Valeur; -- Zero pour l'addition
 
   with function "+"
    (Gauche : in T_Valeur; Droite : in T_Valeur) return T_Valeur;
-   -- Renvoie l'addition de deux T_Valeurs
-   -- @param Gauche : la T_Valeur de gauche
-   -- @param Droite : la T_Valeur de droite
+  -- Renvoie l'addition de deux T_Valeurs
+  -- @param Gauche : la T_Valeur de gauche
+  -- @param Droite : la T_Valeur de droite
   with function "*"
    (Gauche : in T_Valeur; Droite : in T_Valeur) return T_Valeur;
-    -- Renvoie le produit de deux T_Valeurs
-    -- @param Gauche : la T_Valeur de gauche
-    -- @param Droite : la T_Valeur de droite
+  -- Renvoie le produit de deux T_Valeurs
+  -- @param Gauche : la T_Valeur de gauche
+  -- @param Droite : la T_Valeur de droite
 package Matrice is
   -- type T_Dim is array (1 .. 2) of Integer;
-  type T_Matrice is array (Positive range <>, Positive range <>) of T_Valeur;
+  type T_Matrice (Lignes, Colonnes : Positive; Pleine : Boolean) is private;
 
-  procedure Init (Mat : out T_Matrice; Val : in T_Valeur := Neutre);
+  procedure Init (Mat : out T_Matrice; Val : in T_Valeur := Zero);
   -- Initialise une matrice avec une valeur par défaut
   -- @param Mat : la matrice à initialiser
   -- @param Val : la valeur par défaut
+
+  procedure Detruire (Mat : in out T_Matrice);
+  -- Détruit une matrice
+  -- @param Mat : la matrice à détruire
+
+  function Get (Mat : in T_Matrice; Ligne, Colonne : Positive) return T_Valeur;
+  -- Renvoie la valeur d'une matrice à une position donnée
+  -- @param Matrice : la matrice
+  -- @param Ligne : la ligne
+  -- @param Colonne : la colonne
+
+  procedure Set
+   (Mat : in out T_Matrice; Ligne, Colonne : Positive; Val : in T_Valeur);
+  -- Modifie la valeur d'une matrice à une position donnée
+  -- @param Matrice : la matrice
+  -- @param Ligne : la ligne
+  -- @param Colonne : la colonne
+  -- @param Val : la valeur
 
   -- function Dim(Mat: in T_Matrice) return T_Dim with
   -- Post => Dim(Mat)(0) = Mat'Length(0) and Dim(Mat)(1) = Mat'Length(1);
 
   function "+" (A, B : in T_Matrice) return T_Matrice with
-   Pre => A'Length (1) = B'Length (1) and A'Length (2) = B'Length (2);
+   Pre => A.Lignes = B.Lignes and A.Colonnes = B.Colonnes;
   -- Renvoie l'addition de deux matrices
   -- @param A : la première matrice
   -- @param B : la seconde matrice
 
   function "*" (A, B : in T_Matrice) return T_Matrice with
-   Pre  => A'Length (2) = B'Length (1),
+   Pre  => A.Colonnes = B.Lignes,
    Post =>
-    "*"'Result'Length (1) = A'Length (1) and
-    "*"'Result'Length (2) = B'Length (2);
+    "*"'Result.Lignes = A.Lignes and
+    "*"'Result.Colonnes = B.Colonnes;
   -- Renvoie le produit de deux matrices
   -- @param A : la première matrice
   -- @param B : la seconde matrice
@@ -49,16 +67,51 @@ package Matrice is
   -- @param A : le scalaire
   -- @param B : la matrice
 
+  generic
+    with procedure Traiter
+     (Ligne, Colonne : in Integer; Valeur : in out T_Valeur);
+  -- Procédure de traitement d'une T_Valeur
+  -- @param Valeur : la valeur à traiter
+  procedure Pour_Chaque (Mat : in T_Matrice);
+  -- Applique une procédure à chaque valeur d'une matrice
+  -- @param Mat : la matrice
+
   function Transpose (A : in T_Matrice) return T_Matrice;
   -- Renvoie la transposée d'une matrice
   -- @param A : la matrice
 
   generic
     with procedure Afficher_Valeur (Valeur : T_Valeur);
-    -- Procédure d'affichage d'une T_Valeur
-    -- @param Valeur : la valeur à afficher
+  -- Procédure d'affichage d'une T_Valeur
+  -- @param Valeur : la valeur à afficher
   procedure Afficher (Mat : in T_Matrice);
   -- Affiche une matrice à l'aide d'une procédure d'affichage de valeur à donner à l'instanciation
   -- @param Mat : la matrice à afficher
+private
+  type T_Matrice_Pleine is
+   array (Positive range <>, Positive range <>) of T_Valeur;
+  -- Matrice pleine pour les opérations
 
+  type T_Cellule;
+  -- Cellule pour la matrice creuse
+
+  type T_Matrice_Creuse is access T_Cellule;
+  -- Matrice creuse pour les opérations
+
+  type T_Cellule is record
+    Ligne   : Positive;
+    Colonne : Positive;
+    Valeur  : T_Valeur;
+    Suivant : T_Matrice_Creuse;
+  end record;
+  -- Cellule pour la matrice creuse
+
+  type T_Matrice (Lignes, Colonnes : Positive; Pleine : Boolean) is record
+    case Pleine is
+      when True =>
+        Matrice_Pleine : T_Matrice_Pleine (1 .. Lignes, 1 .. Colonnes);
+      when False =>
+        Matrice_Creuse : T_Matrice_Creuse;
+    end case;
+  end record;
 end Matrice;

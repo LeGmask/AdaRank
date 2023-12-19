@@ -26,24 +26,25 @@ procedure Test_Graphe is
     Get (File, N);
 
     declare
-      G        : T_Matrice (1 .. N, 1 .. N);
-      Sortants : T_Matrice (1 .. N, 1 .. 1);
+      G        : T_Matrice (N, N, False);
+      Sortants : T_Matrice (N, 1, False);
     begin
       Lire_Graphe (File, G, Sortants);
 
-      pragma Assert (
-        G(1, 1) = 0.0 and G(1, 2) = 1.0 and G(1, 3) = 1.0 and Sortants(1, 1) = 2.0 and
-        G(2, 1) = 0.0 and G(2, 2) = 0.0 and G(2, 3) = 1.0 and Sortants(2, 1) = 1.0 and
-        G(3, 1) = 0.0 and G(3, 2) = 1.0 and G(3, 3) = 0.0 and Sortants(3, 1) = 1.0
-      );
+      pragma Assert
+       (Get (G, 1, 1) = 0.0 and Get (G, 1, 2) = 1.0 and Get (G, 1, 3) = 1.0 and
+        Get (Sortants, 1, 1) = 2.0 and Get (G, 2, 1) = 0.0 and
+        Get (G, 2, 2) = 0.0 and Get (G, 2, 3) = 1.0 and
+        Get (Sortants, 2, 1) = 1.0 and Get (G, 3, 1) = 0.0 and
+        Get (G, 3, 2) = 1.0 and Get (G, 3, 3) = 0.0 and
+        Get (Sortants, 3, 1) = 1.0);
 
       Ponderer_Graphe (G, Sortants);
-      
-      pragma Assert (
-        G(1, 1) = 0.0 and G(1, 2) = 0.5 and G(1, 3) = 0.5 and
-        G(2, 1) = 0.0 and G(2, 2) = 0.0 and G(2, 3) = 1.0 and
-        G(3, 1) = 0.0 and G(3, 2) = 1.0 and G(3, 3) = 0.0
-      );
+
+      pragma Assert
+       (Get (G, 1, 1) = 0.0 and Get (G, 1, 2) = 0.5 and Get (G, 1, 3) = 0.5 and
+        Get (G, 2, 1) = 0.0 and Get (G, 2, 2) = 0.0 and Get (G, 2, 3) = 1.0 and
+        Get (G, 3, 1) = 0.0 and Get (G, 3, 2) = 1.0 and Get (G, 3, 3) = 0.0);
     end;
   end Tester_Graphe;
 
