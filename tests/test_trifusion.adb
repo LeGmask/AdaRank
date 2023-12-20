@@ -1,26 +1,11 @@
 with Trifusion;
 with Matrice;
-with Ada.Float_Text_IO;   use Ada.Float_Text_IO;
-with Ada.Integer_Text_IO; use Ada.Integer_Text_IO;
+with Ada.Text_IO;   use Ada.Text_IO;
 
 procedure Test_Trifusion is
 
     package Matrice_Integer is new Matrice (Integer, 0, "+", "*");
-    --  use Matrice_Integer;
     package Matrice_Float is new Matrice (Float, 0.0, "+", "*");
-    --  use Matrice_Float;
-
-    --  procedure Put_Element (E : Float) is
-    --  begin
-    --  Put (E);
-    --  end Put_Element;
-    --  procedure Put_Element (E : Integer) is
-    --  begin
-    --      Put (E);
-    --  end Put_Element;
-
-    --  procedure Afficher_Matrice is new Matrice_Float.Afficher (Put_Element);
-    --  procedure Afficher_Matrice is new Matrice_Integer.Afficher (Put_Element);
 
     package Trifusion_Float is new Trifusion
        (Matrice_Float, Matrice_Integer, "<");
@@ -30,6 +15,8 @@ procedure Test_Trifusion is
     Ordre : Matrice_Integer.T_Matrice (1, A.Colonnes, True);
 
 begin
+    Put(">>> Test du module Trifusion...");
+
     Matrice_Float.Set (A, 1, 1, 10.0);
     Matrice_Float.Set (A, 1, 2, 7.0);
     Matrice_Float.Set (A, 1, 3, 4.0);
@@ -65,4 +52,9 @@ begin
         Matrice_Integer.Get (Ordre, 1, 5) = 7 and Matrice_Integer.Get (Ordre, 1, 6) = 10 and
         Matrice_Integer.Get (Ordre, 1, 7) = 3 and Matrice_Integer.Get (Ordre, 1, 8) = 9 and
         Matrice_Integer.Get (Ordre, 1, 9) = 6 and Matrice_Integer.Get (Ordre, 1, 10) = 5);
+
+    Matrice_Float.Detruire (A);
+    Matrice_Integer.Detruire (Ordre);
+
+    Put_Line (" OK");
 end Test_Trifusion;

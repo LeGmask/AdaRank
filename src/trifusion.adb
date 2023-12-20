@@ -16,30 +16,32 @@ package body Trifusion is
             I := 0;
             J := 0;
             while (I + Deb < Milieu) and then (J + Milieu <= Fin) loop
-               if Vecteur (1, J + Milieu) < Vecteur (1, I + Deb) then
-                  Vecteur_trie (1, Deb + I + J) := Vecteur (1, I + Deb);
-                  Ordre_trie (1, Deb + I + J)   := Ordre (1, I + Deb);
+               if Get(Vecteur, 1, J + Milieu) < Get(Vecteur, 1, I + Deb) then
+                  Set(Vecteur_trie, 1, Deb + I + J, Get(Vecteur, 1, I + Deb));
+                  Matrice_Ordre.Set(Ordre_trie, 1, Deb + I + J, Matrice_Ordre.Get(Ordre, 1, I + Deb));
                   I                             := I + 1;
                else
-                  Vecteur_trie (1, Deb + I + J) := Vecteur (1, J + Milieu);
-                  Ordre_trie (1, Deb + I + J)   := Ordre (1, J + Milieu);
+                  Set(Vecteur_trie, 1, Deb + I + J, Get(Vecteur, 1, J + Milieu));
+                  Matrice_Ordre.Set(Ordre_trie, 1, Deb + I + J, Matrice_Ordre.Get(Ordre, 1, J + Milieu));
                   J                             := J + 1;
                end if;
             end loop;
 
             -- Recopier vecteur_trie dans vecteur
             while I + Deb < Milieu loop
-               Vecteur_trie (1, I + J + Deb) := Vecteur (1, I + Deb);
-               Ordre_trie (1, I + J + Deb)   := Ordre (1, I + Deb);
+               Set (Vecteur_trie, 1, I + J + Deb, Get(Vecteur, 1, I + Deb));
+               Matrice_Ordre.Set (Ordre_trie, 1, I + J + Deb, Matrice_Ordre.Get (Ordre, 1, I + Deb));
                I                             := I + 1;
             end loop;
             while J + Milieu <= Fin loop
-               Vecteur_trie (1, I + J + Deb) := Vecteur (1, J + Milieu);
-               Ordre_trie (1, I + J + Deb)   := Ordre (1, J + Milieu);
+               Set (Vecteur_trie, 1, I + J + Deb, Get (Vecteur, 1, J + Milieu));
+               Matrice_Ordre.Set (Ordre_trie, 1, I + J + Deb, Matrice_Ordre.Get(Ordre, 1, J + Milieu));
                J                             := J + 1;
             end loop;
             Vecteur := Vecteur_trie;
             Ordre   := Ordre_trie;
+            Matrice_Ordre.Detruire (Ordre_trie);
+            Detruire (Vecteur_trie);
          end Fusion;
 
          Milieu : Integer;
@@ -54,7 +56,7 @@ package body Trifusion is
       end Tri_Recursif;
 
    begin
-      Tri_Recursif (Vecteur, 1, Vecteur'Length (2));
+      Tri_Recursif (Vecteur, 1, Vecteur.Colonnes);
    end Tri;
 
 end Trifusion;
