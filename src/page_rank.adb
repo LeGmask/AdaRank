@@ -36,18 +36,19 @@ procedure Page_Rank is
    procedure Sauver is new Export_Resultats (Put_Element, Put_Element);
 
    procedure Algorithme
-     (Alpha   : in     Float; K : in Integer; Eps : in Float;
-      Prefixe : in Unbounded_String; N : in Integer; Plein : in Boolean; H, Sortants : in out T_Matrice;
-      Pi      : out T_Matrice; Ordre : out Matrice_Integer.T_Matrice)
+     (Alpha       : in     Float; K : in Integer; Eps : in Float;
+      Prefixe     : in Unbounded_String; N : in Integer; Plein : in Boolean;
+      H, Sortants : in out T_Matrice; Pi : out T_Matrice;
+      Ordre       :    out Matrice_Integer.T_Matrice)
    is
 
       function Norme (A : in T_Matrice) return Float is
-         Max_Abs : Float := abs (Get(A ,1, 1));
+         Max_Abs : Float := abs (Get (A, 1, 1));
       begin
-         for I in 1..A.Lignes loop
-            for J in 1..A.Colonnes loop
-               if abs (Get(A, I, J)) > Max_Abs then
-                  Max_Abs := abs (Get(A, I, J));
+         for I in 1 .. A.Lignes loop
+            for J in 1 .. A.Colonnes loop
+               if abs (Get (A, I, J)) > Max_Abs then
+                  Max_Abs := abs (Get (A, I, J));
                end if;
             end loop;
          end loop;
@@ -56,10 +57,13 @@ procedure Page_Rank is
 
       I : Integer;
 
-      S        : T_Matrice (N, N, Plein);
-      G        : T_Matrice (N, N, Plein);
-      Attila   : T_Matrice (N, N, Plein);
-      Pi_avant : T_Matrice (1, N, Plein);
+      S           : T_Matrice (N, N, Plein);
+      G           : T_Matrice (N, N, Plein);
+      Attila      : T_Matrice (N, N, Plein);
+      Pi_avant    : T_Matrice (1, N, Plein);
+      Pi_detruire : T_Matrice (1, N, Plein);
+      Pi_norm     : T_Matrice (1, N, Plein);
+
       --  Ordre    : Matrice_Integer.T_Matrice (1, N, True);
 
    begin
@@ -68,7 +72,7 @@ procedure Page_Rank is
          --! Créer la matrice S
          S := H;
          for I in 1 .. N loop
-            if Get(Sortants, I, 1) = 0.0 then
+            if Get (Sortants, I, 1) = 0.0 then
                for J in 1 .. N loop
                   Set (S, I, J, 1.0 / Float (N));
                end loop;
@@ -78,31 +82,49 @@ procedure Page_Rank is
          --! Créer la matrice G
          Init (Attila, 1.0);
          G := Alpha * S + ((1.0 - Alpha) / Float (N)) * Attila;
-      else 
-         G := H;
+      else
+         G := Copie (H);
       end if;
 
       --! Calculer la matrice Pi par itérations
       I := 0;
       Init (Pi_avant, 1.0 / Float (N));
       Pi := Pi_avant * G;
-      while (I < K) and then Norme (Pi + (Pi_avant * (-1.0))) > Eps loop
-         Pi_avant := Pi;
-         Pi       := Pi * G;
-         I        := I + 1;
+
+      -- Calcul du Pi utilisé pour la norme
+      Pi_detruire := Pi_avant * (-1.0);
+      Pi_norm := Pi + Pi_detruire;
+      Detruire (Pi_detruire);
+
+      while (I < K) and then Norme (Pi_norm) > Eps loop
+         Detruire (Pi_avant);
+         Pi_avant    := Copie (Pi);
+
+         Pi_detruire := Pi;
+         Pi          := Pi * G;
+         Detruire (Pi_detruire);
+
+         -- Calcul du Pi utilisé pour la norme
+         Detruire (Pi_norm); -- On détruit l'ancien Pi_norm
+         Pi_detruire := Pi_avant * (-1.0);
+         Pi_norm := Pi + Pi_detruire;
+         Detruire (Pi_detruire);
+
+         I := I + 1;
       end loop;
+      Detruire (Pi_norm);
 
       for I in 1 .. N loop
-         Matrice_Integer.Set(Ordre, 1, I, I - 1);
+         Matrice_Integer.Set (Ordre, 1, I, I - 1);
       end loop;
       Tri_Fusion.Tri (Pi, Ordre);
 
-      Detruire(S);
-      Detruire(G);
-      Detruire(Pi_avant);
-      Detruire(Attila);
-      Detruire(H);
-      Detruire(Sortants);
+      Detruire (S);
+      Detruire (G);
+      Detruire (Pi_avant);
+      Detruire (Attila);
+      Detruire (H);
+      Detruire (Sortants);
    end Algorithme;
 
    ALPHA_INVALIDE       : exception;
@@ -179,20 +201,19 @@ begin
    Open (File, In_File, To_String (Reseau));
    Get (File, N);
 
-
    declare
       H        : T_Matrice (N, N, Plein);
-      Sortants : T_Matrice (N, 1, True);
+      Sortants : T_Matrice (N, 1, Plein);
       Pi       : T_Matrice (1, N, Plein);
-      Ordre    : Matrice_Integer.T_Matrice (1, N, True);
+      Ordre    : Matrice_Integer.T_Matrice (1, N, Plein);
    begin
       Lire_Graphe (File, H, Sortants);
       Close (File);
       Ponderer_Graphe (H, Sortants);
       Algorithme (Alpha, K, Eps, Prefixe, N, Plein, H, Sortants, Pi, Ordre);
       Sauver (Pi, Ordre, N, K, Alpha, To_String (Prefixe));
-      Matrice_Float.Detruire(Pi);
-      Matrice_Integer.Detruire(Ordre);
+      Detruire (Pi);
+      Matrice_Integer.Detruire (Ordre);
    end;
 
    --! Vérifier si les arguments sont valides
@@ -212,5 +233,4 @@ exception
         ("Emplacement du fichier invalide, veuillez relire votre appel");
    -- when others               =>
    --   null;
-
 end Page_Rank;
