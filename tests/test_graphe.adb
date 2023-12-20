@@ -11,7 +11,7 @@ procedure Test_Graphe is
   package Graphe_Float is new Graphe (Matrice_Float, 1.0, "/");
   use Graphe_Float;
 
-  procedure Tester_Graphe is
+  procedure Tester_Graphe (Plein : in Boolean) is
 
     procedure Put_Float (F : in Float) is
     begin
@@ -26,8 +26,8 @@ procedure Test_Graphe is
     Get (File, N);
 
     declare
-      G        : T_Matrice (N, N, False);
-      Sortants : T_Matrice (N, 1, False);
+      G        : T_Matrice (N, N, Plein);
+      Sortants : T_Matrice (N, 1, Plein);
     begin
       Lire_Graphe (File, G, Sortants);
 
@@ -49,10 +49,17 @@ procedure Test_Graphe is
       Detruire (G);
       Detruire (Sortants);
     end;
+
+    Close (File);
   end Tester_Graphe;
 
 begin
-  Put(">>> Test du module Graphe...");
-  Tester_Graphe;
-  Put_Line(" OK");
+  Put_Line (">>> Test du module Graphe plein...");
+  Put ("  -> Test du mode plein... ");
+  Tester_Graphe (True);
+  Put_Line (" OK");
+  Put ("  -> Test du mode creux... ");
+  Tester_Graphe (False);
+  Put_Line (" OK");
+  Put_Line ("<<< Module Graphe OK");
 end Test_Graphe;

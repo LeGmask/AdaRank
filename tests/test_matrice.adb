@@ -161,5 +161,5 @@ begin
   Put ("  -> Test de la transposé... ");
   Tester_Transpose (True);
   Put_Line ("OK");
-  Put_Line (">>> Module Matrice OK");
+  Put_Line ("<<< Module Matrice OK");
 end Test_Matrice;
