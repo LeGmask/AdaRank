@@ -1,6 +1,5 @@
 with Ada.Text_IO;         use Ada.Text_IO;
 with Ada.Integer_Text_IO; use Ada.Integer_Text_IO;
-with Ada.Float_Text_IO;   use Ada.Float_Text_IO;
 with Graphe;
 with Matrice;
 
@@ -12,13 +11,6 @@ procedure Test_Graphe is
   use Graphe_Float;
 
   procedure Tester_Graphe (Plein : in Boolean) is
-
-    procedure Put_Float (F : in Float) is
-    begin
-      Put (F);
-    end Put_Float;
-
-    procedure Afficher_Matrice is new Afficher (Put_Float);
     File : File_Type;
     N    : Integer;
   begin
