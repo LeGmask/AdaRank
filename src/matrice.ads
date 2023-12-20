@@ -22,6 +22,11 @@ package Matrice is
   -- @param Mat : la matrice à initialiser
   -- @param Val : la valeur par défaut
 
+  function Copie (Mat : in T_Matrice) return T_Matrice with
+   Post => Copie'Result.Lignes = Mat.Lignes and Copie'Result.Colonnes = Mat.Colonnes;
+  -- Renvoie une copie d'une matrice
+  -- @param Mat : la matrice à copier
+  
   procedure Detruire (Mat : in out T_Matrice);
   -- Détruit une matrice
   -- @param Mat : la matrice à détruire

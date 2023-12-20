@@ -49,6 +49,46 @@ package body Matrice is
     end if;
   end Init;
 
+  function Copie (Mat : in T_Matrice) return T_Matrice is
+    Copie: T_Matrice(Mat.Lignes, Mat.Colonnes, Mat.Pleine);
+
+    procedure Copier_Pleine is
+    begin
+      Copie.Matrice_Pleine := Mat.Matrice_Pleine;
+    end Copier_Pleine;
+
+    procedure Copier_Creuse is
+      Curseur, Cellule_Prec, Nouvelle_Cellule : T_Matrice_Creuse;
+    begin
+      Curseur := Mat.Matrice_Creuse;
+
+      while Curseur /= null loop
+        Nouvelle_Cellule :=
+         new T_Cellule'
+          (Ligne   => Curseur.all.Ligne, Colonne => Curseur.all.Colonne,
+           Valeur  => Curseur.all.Valeur, Suivant => null);
+
+        if Cellule_Prec = null then
+          Copie.Matrice_Creuse := Nouvelle_Cellule;
+        else
+          Cellule_Prec.all.Suivant := Nouvelle_Cellule;
+        end if;
+
+        Curseur := Curseur.all.Suivant;
+        Cellule_Prec := Nouvelle_Cellule;
+      end loop;
+    end Copier_Creuse;
+
+  begin
+    if Mat.Pleine then
+      Copier_Pleine;
+    else
+      Copier_Creuse;
+    end if;
+
+    return Copie;
+  end Copie;
+
   procedure Detruire (Mat : in out T_Matrice) is
   begin
     if Mat.Pleine then

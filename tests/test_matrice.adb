@@ -32,6 +32,32 @@ procedure Test_Matrice is
     Detruire (B);
   end Tester_Init;
 
+  procedure Tester_Copie (Pleine : in Boolean) is
+    A : T_Matrice (3, 3, Pleine);
+    B : T_Matrice (3, 3, Pleine);
+  begin
+
+    Set (A, 1, 1, 1);
+    Set (A, 1, 2, 2);
+    Set (A, 1, 3, 3);
+    Set (A, 2, 1, 4);
+    --  Set (A, 2, 2, 5); -- creux
+    Set (A, 2, 3, 6);
+    Set (A, 3, 1, 7);
+    Set (A, 3, 2, 8);
+    Set (A, 3, 3, 9);
+
+    B := Copie (A);
+    for I in 1 .. B.Lignes loop
+      for J in 1 .. B.Colonnes loop
+        pragma Assert (Get (B, I, J) = Get (A, I, J));
+      end loop;
+    end loop;
+
+    Detruire (A);
+    Detruire (B);
+  end Tester_Copie;
+
   procedure Tester_Plus (Pleine : in Boolean) is
     A : T_Matrice (3, 2, Pleine);
     B : T_Matrice (3, 2, Pleine);
@@ -133,6 +159,10 @@ begin
   Tester_Init (False);
   Put_Line ("OK");
 
+  Put ("  -> Test de la copie... ");
+  Tester_Copie (False);
+  Put_Line ("OK");
+
   Put ("  -> Test de l'addition... ");
   Tester_Plus (False);
   Put_Line ("OK");
@@ -141,13 +171,17 @@ begin
   Tester_Mult (False);
   Put_Line ("OK");
 
-  Put("  -> Test de la transposé... ");
+  Put ("  -> Test de la transposée... ");
   Tester_Transpose (False);
   Put_Line ("OK");
 
   Put_Line (" - Mode plein :");
   Put ("  -> Test de l'initialisation... ");
   Tester_Init (True);
+  Put_Line ("OK");
+
+  Put ("  -> Test de la copie... ");
+  Tester_Copie (True);
   Put_Line ("OK");
 
   Put ("  -> Test de l'addition... ");
@@ -158,7 +192,7 @@ begin
   Tester_Mult (True);
   Put_Line ("OK");
 
-  Put ("  -> Test de la transposé... ");
+  Put ("  -> Test de la transposée... ");
   Tester_Transpose (True);
   Put_Line ("OK");
   Put_Line ("<<< Module Matrice OK");
