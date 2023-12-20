@@ -18,29 +18,33 @@ package body Matrice is
       Curseur, Nouvelle_Cellule : T_Matrice_Creuse;
       Index                     : Natural := 1;
     begin
-      Curseur :=
-       new T_Cellule'
-        (Ligne => 1, Colonne => 1, Valeur => Val, Suivant => null);
-
-      Mat.Matrice_Creuse := Curseur;
-
-      while Index < Mat.Lignes * Mat.Colonnes loop
-        Nouvelle_Cellule :=
+      if Val = Zero then
+        Mat.Matrice_Creuse := null;
+      else
+        Curseur :=
          new T_Cellule'
-          (Ligne   => (Index / (Mat.Colonnes)) + 1,
-           Colonne => (Index mod Mat.Colonnes) + 1, Valeur => Val,
-           Suivant => null);
+          (Ligne => 1, Colonne => 1, Valeur => Val, Suivant => null);
 
-        Curseur.all.Suivant := Nouvelle_Cellule;
-        Curseur             := Nouvelle_Cellule;
-        Index               := Index + 1;
-      end loop;
+        Mat.Matrice_Creuse := Curseur;
+
+        while Index < Mat.Lignes * Mat.Colonnes loop
+          Nouvelle_Cellule :=
+           new T_Cellule'
+            (Ligne   => (Index / (Mat.Colonnes)) + 1,
+             Colonne => (Index mod Mat.Colonnes) + 1, Valeur => Val,
+             Suivant => null);
+
+          Curseur.all.Suivant := Nouvelle_Cellule;
+          Curseur             := Nouvelle_Cellule;
+          Index               := Index + 1;
+        end loop;
+      end if;
     end Init_Creuse;
 
   begin
     if Mat.Pleine then
       Init_Pleine;
-    elsif Val /= Zero then
+    else
       Init_Creuse;
     end if;
   end Init;
@@ -179,13 +183,10 @@ package body Matrice is
     Mat : T_Matrice (A.Lignes, A.Colonnes, A.Pleine);
 
     procedure Addition_Pleine is
-      Matrice_Pleine_A : T_Matrice_Pleine := A.Matrice_Pleine;
-      Matrice_Pleine_B : T_Matrice_Pleine := B.Matrice_Pleine;
     begin
-      for I in Matrice_Pleine_A'Range (1) loop
-        for J in Matrice_Pleine_A'Range (2) loop
-          Mat.Matrice_Pleine (I, J) :=
-           Matrice_Pleine_A (I, J) + Matrice_Pleine_B (I, J);
+      for I in 1 .. A.Lignes loop
+        for J in 1 .. A.Colonnes loop
+          Set (Mat, I, J, Get (A, I, J) + Get (B, I, J));
         end loop;
       end loop;
     end Addition_Pleine;
@@ -450,9 +451,9 @@ package body Matrice is
 
     function Transpose_Pleine return T_Matrice is
     begin
-      for I in A.Matrice_Pleine'Range (1) loop
-        for J in A.Matrice_Pleine'Range (2) loop
-          Mat.Matrice_Pleine (J, I) := A.Matrice_Pleine (I, J);
+      for I in 1 .. A.Lignes loop
+        for J in 1 .. A.Colonnes loop
+          Set (Mat, J, I, Get (A, I, J));
         end loop;
       end loop;
 

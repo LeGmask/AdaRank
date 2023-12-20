@@ -14,6 +14,7 @@ procedure Test_Matrice is
 
     Set (B, 1, 1, 1);
     Set (B, 1, 2, 2);
+    Set (B, 2, 1, 4_578);
     Set (B, 2, 1, 0); -- creux
     Set (B, 2, 2, 0); -- creux
     Set (B, 3, 1, 5);
@@ -64,6 +65,7 @@ procedure Test_Matrice is
     A : T_Matrice (3, 2, Pleine);
     B : T_Matrice (2, 3, Pleine);
     C : T_Matrice (3, 3, Pleine);
+    D : T_Matrice (3, 3, Pleine);
   begin
     Set (A, 1, 1, 1);
     Set (A, 1, 2, 2);
@@ -85,21 +87,23 @@ procedure Test_Matrice is
       Get (C, 2, 1) = 19 and Get (C, 2, 2) = 26 and Get (C, 2, 3) = 33 and
       Get (C, 3, 1) = 29 and Get (C, 3, 2) = 40 and Get (C, 3, 3) = 51);
 
-    C := C * 2;
+    D := C * 2;
     pragma Assert
-     (Get (C, 1, 1) = 18 and Get (C, 1, 2) = 24 and Get (C, 1, 3) = 30 and
-      Get (C, 2, 1) = 38 and Get (C, 2, 2) = 52 and Get (C, 2, 3) = 66 and
-      Get (C, 3, 1) = 58 and Get (C, 3, 2) = 80 and Get (C, 3, 3) = 102);
+     (Get (D, 1, 1) = 18 and Get (D, 1, 2) = 24 and Get (D, 1, 3) = 30 and
+      Get (D, 2, 1) = 38 and Get (D, 2, 2) = 52 and Get (D, 2, 3) = 66 and
+      Get (D, 3, 1) = 58 and Get (D, 3, 2) = 80 and Get (D, 3, 3) = 102);
+    Detruire (D);
 
-    C := 2 * C;
+    D := 2 * C;
     pragma Assert
-     (Get (C, 1, 1) = 36 and Get (C, 1, 2) = 48 and Get (C, 1, 3) = 60 and
-      Get (C, 2, 1) = 76 and Get (C, 2, 2) = 104 and Get (C, 2, 3) = 132 and
-      Get (C, 3, 1) = 116 and Get (C, 3, 2) = 160 and Get (C, 3, 3) = 204);
+     (Get (D, 1, 1) = 18 and Get (D, 1, 2) = 24 and Get (D, 1, 3) = 30 and
+      Get (D, 2, 1) = 38 and Get (D, 2, 2) = 52 and Get (D, 2, 3) = 66 and
+      Get (D, 3, 1) = 58 and Get (D, 3, 2) = 80 and Get (D, 3, 3) = 102);
 
     Detruire (A);
     Detruire (B);
     Detruire (C);
+    Detruire (D);
   end Tester_Mult;
 
   procedure Tester_Transpose (Pleine : in Boolean) is
