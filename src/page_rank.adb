@@ -35,31 +35,19 @@ procedure Page_Rank is
 
    procedure Sauver is new Export_Resultats (Put_Element, Put_Element);
 
-   procedure M_Plein
+   procedure Algorithme
      (Alpha   : in     Float; K : in Integer; Eps : in Float;
-      Prefixe : in Unbounded_String; N : in Integer; H, Sortants : T_Matrice;
-      Pi      :    out T_Matrice; Ordre : out Matrice_Integer.T_Matrice)
+      Prefixe : in Unbounded_String; N : in Integer; Plein : in Boolean; H, Sortants : in out T_Matrice;
+      Pi      : out T_Matrice; Ordre : out Matrice_Integer.T_Matrice)
    is
 
-      procedure Put_Element (E : Float) is
-      begin
-         Put (E);
-      end Put_Element;
-      procedure Put_Element (E : Integer) is
-      begin
-         Put (E);
-      end Put_Element;
-
-      procedure Afficher_Matrice is new Matrice_Float.Afficher (Put_Element);
-      procedure Afficher_Matrice is new Matrice_Integer.Afficher (Put_Element);
-
       function Norme (A : in T_Matrice) return Float is
-         Max_Abs : Float := abs (A (1, 1));
+         Max_Abs : Float := abs (Get(A ,1, 1));
       begin
-         for I in A'Range (1) loop
-            for J in A'Range (2) loop
-               if abs (A (I, J)) > Max_Abs then
-                  Max_Abs := abs (A (I, J));
+         for I in 1..A.Lignes loop
+            for J in 1..A.Colonnes loop
+               if abs (Get(A, I, J)) > Max_Abs then
+                  Max_Abs := abs (Get(A, I, J));
                end if;
             end loop;
          end loop;
@@ -68,29 +56,31 @@ procedure Page_Rank is
 
       I : Integer;
 
-      S        : T_Matrice (1 .. N, 1 .. N);
-      G        : T_Matrice (1 .. N, 1 .. N);
-      Attila   : T_Matrice (1 .. N, 1 .. N);
-      Pi_avant : T_Matrice (1 .. 1, 1 .. N);
-      --  Ordre    : Matrice_Integer.T_Matrice (1 .. 1, 1 .. N);
+      S        : T_Matrice (N, N, Plein);
+      G        : T_Matrice (N, N, Plein);
+      Attila   : T_Matrice (N, N, Plein);
+      Pi_avant : T_Matrice (1, N, Plein);
+      --  Ordre    : Matrice_Integer.T_Matrice (1, N, True);
 
    begin
-      -- Charger le graphe dans une matrice d'adjacence pondérée
       -- Appliquer l'algorithme PageRank jusqu'à terminaison
+      if Plein then
+         --! Créer la matrice S
+         S := H;
+         for I in 1 .. N loop
+            if Get(Sortants, I, 1) = 0.0 then
+               for J in 1 .. N loop
+                  Set (S, I, J, 1.0 / Float (N));
+               end loop;
+            end if;
+         end loop;
 
-      --! Créer la matrice S
-      S := H;
-      for I in 1 .. N loop
-         if Sortants (I, 1) = 0.0 then
-            for J in 1 .. N loop
-               S (I, J) := 1.0 / Float (N);
-            end loop;
-         end if;
-      end loop;
-
-      --! Créer la matrice G
-      Init (Attila, 1.0);
-      G := Alpha * S + ((1.0 - Alpha) / Float (N)) * Attila;
+         --! Créer la matrice G
+         Init (Attila, 1.0);
+         G := Alpha * S + ((1.0 - Alpha) / Float (N)) * Attila;
+      else 
+         G := H;
+      end if;
 
       --! Calculer la matrice Pi par itérations
       I := 0;
@@ -102,15 +92,18 @@ procedure Page_Rank is
          I        := I + 1;
       end loop;
 
-      -- Afficher_Matrice (Pi);
       for I in 1 .. N loop
-         Ordre (1, I) := I - 1;
+         Matrice_Integer.Set(Ordre, 1, I, I - 1);
       end loop;
       Tri_Fusion.Tri (Pi, Ordre);
-      -- Afficher_Matrice (Ordre);
-      -- Afficher_Matrice (Pi);
 
-   end M_Plein;
+      Detruire(S);
+      Detruire(G);
+      Detruire(Pi_avant);
+      Detruire(Attila);
+      Detruire(H);
+      Detruire(Sortants);
+   end Algorithme;
 
    ALPHA_INVALIDE       : exception;
    EPS_INVALIDE         : exception;
@@ -186,23 +179,21 @@ begin
    Open (File, In_File, To_String (Reseau));
    Get (File, N);
 
-   if Plein then
 
-      declare
-         H        : T_Matrice (1 .. N, 1 .. N);
-         Sortants : T_Matrice (1 .. N, 1 .. 1);
-         Pi       : T_Matrice (1 .. 1, 1 .. N);
-         Ordre    : Matrice_Integer.T_Matrice (1 .. 1, 1 .. N);
-      begin
-         Lire_Graphe (File, H, Sortants);
-         Close (File);
-         Ponderer_Graphe (H, Sortants);
-         M_Plein (Alpha, K, Eps, Prefixe, N, H, Sortants, Pi, Ordre);
-         Sauver (Pi, Ordre, N, K, Alpha, To_String (Prefixe));
-      end;
-   else
-      null;
-   end if;
+   declare
+      H        : T_Matrice (N, N, Plein);
+      Sortants : T_Matrice (N, 1, True);
+      Pi       : T_Matrice (1, N, Plein);
+      Ordre    : Matrice_Integer.T_Matrice (1, N, True);
+   begin
+      Lire_Graphe (File, H, Sortants);
+      Close (File);
+      Ponderer_Graphe (H, Sortants);
+      Algorithme (Alpha, K, Eps, Prefixe, N, Plein, H, Sortants, Pi, Ordre);
+      Sauver (Pi, Ordre, N, K, Alpha, To_String (Prefixe));
+      Matrice_Float.Detruire(Pi);
+      Matrice_Integer.Detruire(Ordre);
+   end;
 
    --! Vérifier si les arguments sont valides
 exception
