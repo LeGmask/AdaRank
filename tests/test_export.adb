@@ -36,6 +36,7 @@ procedure Test_export is
    Entier   : Integer;
    Flottant : Float;
 begin
+   Put(">>> Test du module d'Export...");
    Matrice_Float.Set (Pi, 1, 1, 10.0);
    Matrice_Float.Set (Pi, 1, 2, 7.0);
    Matrice_Float.Set (Pi, 1, 3, 4.0);
@@ -77,5 +78,5 @@ begin
       pragma Assert (Entier = Matrice_Integer.Get (Ordre, 1, I));
    end loop;
    Close (File);
-
+   Put_Line (" OK");
 end Test_export;
