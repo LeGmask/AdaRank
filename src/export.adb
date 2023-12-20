@@ -15,14 +15,14 @@ package body Export is
             Integer'Image (K));
 
         for J in 1 .. N loop
-            Put_Pi (Fichier_Pi, Pi (1, J));
+            Put_Pi (Fichier_Pi, Get(Pi, 1, J));
             New_Line (Fichier_Pi);
         end loop;
         Close (Fichier_Pi);
 
         Create (Fichier_Ordre, Out_File, Prefix & ".pr");
         for J in 1 .. N loop
-            Put_Ordre (Fichier_Ordre, Ordre (1, J));
+            Put_Ordre (Fichier_Ordre, Matrice_Ordre.Get(Ordre, 1, J));
             New_Line (Fichier_Ordre);
         end loop;
 
