@@ -45,11 +45,14 @@ procedure Test_Graphe is
        (Get (G, 1, 1) = 0.0 and Get (G, 1, 2) = 0.5 and Get (G, 1, 3) = 0.5 and
         Get (G, 2, 1) = 0.0 and Get (G, 2, 2) = 0.0 and Get (G, 2, 3) = 1.0 and
         Get (G, 3, 1) = 0.0 and Get (G, 3, 2) = 1.0 and Get (G, 3, 3) = 0.0);
+
+      Detruire (G);
+      Detruire (Sortants);
     end;
   end Tester_Graphe;
 
 begin
-
+  Put(">>> Test du module Graphe...");
   Tester_Graphe;
-
+  Put_Line(" OK");
 end Test_Graphe;

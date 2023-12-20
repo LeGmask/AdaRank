@@ -17,8 +17,8 @@ package body Graphe is
             Get (File, I);
             Get (File, J);
 
-            Adj (I + 1, J + 1)  := Adj (I + 1, J + 1) + Defaut_Poid;
-            Sortants (I + 1, 1) := Sortants (I + 1, 1) + Defaut_Poid;
+            Set (Adj, I + 1, J + 1, Get (Adj, I + 1, J + 1) + Defaut_Poid);
+            Set (Sortants, I + 1, 1, Get (Sortants, I + 1, 1) + Defaut_Poid);
 
         end loop;
     exception
@@ -28,11 +28,13 @@ package body Graphe is
 
     procedure Ponderer_Graphe (Adj : in out T_Matrice; Sortants : in T_Matrice)
     is
+        Item : T_Valeur;
     begin
-        for I in Adj'Range (1) loop
-            for J in Adj'Range (2) loop
-                if Adj (I, J) /= Neutre then
-                    Adj (I, J) := Adj (I, J) / Sortants (I, 1);
+        for I in 1 .. Adj.Lignes loop
+            for J in 1 .. Adj.Colonnes loop
+                Item := Get (Adj, I, J);
+                if Item /= Zero then
+                    Set (Adj, I, J, Item / Get (Sortants, I, 1));
                 end if;
             end loop;
         end loop;
