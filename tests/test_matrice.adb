@@ -126,17 +126,40 @@ procedure Test_Matrice is
     Detruire (B);
   end Tester_Transpose;
 begin
-  Put_Line ("Test du module Matrice...");
+  Put_Line (">>> Test du module Matrice...");
   Put_Line (" - Mode creux :");
+
+  Put ("  -> Test de l'initialisation... ");
   Tester_Init (False);
+  Put_Line ("OK");
+
+  Put ("  -> Test de l'addition... ");
   Tester_Plus (False);
+  Put_Line ("OK");
+
+  Put ("  -> Test de la multiplication... ");
   Tester_Mult (False);
+  Put_Line ("OK");
+
+  Put("  -> Test de la transposé... ");
   Tester_Transpose (False);
+  Put_Line ("OK");
 
   Put_Line (" - Mode plein :");
+  Put ("  -> Test de l'initialisation... ");
   Tester_Init (True);
+  Put_Line ("OK");
+
+  Put ("  -> Test de l'addition... ");
   Tester_Plus (True);
+  Put_Line ("OK");
+
+  Put ("  -> Test de la multiplication... ");
   Tester_Mult (True);
+  Put_Line ("OK");
+
+  Put ("  -> Test de la transposé... ");
   Tester_Transpose (True);
-  Put_Line (">>> Fin du test du module Matrice...");
+  Put_Line ("OK");
+  Put_Line (">>> Module Matrice OK");
 end Test_Matrice;
