@@ -97,19 +97,31 @@ private
    array (Positive range <>, Positive range <>) of T_Valeur;
   -- Matrice pleine pour les opérations
 
-  type T_Cellule;
-  -- Cellule pour la matrice creuse
+  type T_Colonne;
+  -- Colonne pour T_Matrice_Creuse
 
-  type T_Matrice_Creuse is access T_Cellule;
+  type T_Matrice_Creuse is access T_Colonne;
   -- Matrice creuse pour les opérations
+
+  type T_Vecteur_Creux;
+  -- Vecteur pour T_Colonne
+
+  type T_Colonne is record
+    Colonne : Positive;
+    Suivante : T_Matrice_Creuse;
+    Vecteur: T_Vecteur_Creux;
+  end record;
+
+  type T_Cellule;
+  -- Cellule pour T_Vecteur_Creux
+
+  type T_Vecteur_Creux is access T_Cellule;
 
   type T_Cellule is record
     Ligne   : Positive;
-    Colonne : Positive;
     Valeur  : T_Valeur;
-    Suivant : T_Matrice_Creuse;
+    Suivante : T_Vecteur_Creux;
   end record;
-  -- Cellule pour la matrice creuse
 
   type T_Matrice (Lignes, Colonnes : Positive; Pleine : Boolean) is record
     case Pleine is
