@@ -19,7 +19,7 @@ package body Matrice is
 
     procedure Init_Creuse is
       Curseur_Cellule, Nouvelle_Cellule : T_Vecteur_Creux;
-      Curseur_Colonne, Nouvelle_Colonne : T_Matrice_Creuse;
+      Curseur_Colonne, Nouvelle_Colonne : T_Matrice (Mat.Lignes, 1, False);
       Index_Colonne                     : Natural := 1;
       Index_Ligne                       : Natural := 1;
     begin
@@ -29,11 +29,11 @@ package body Matrice is
         Curseur_Cellule :=
          new T_Cellule'(Ligne => 1, Valeur => Val, Suivante => null);
 
-        Curseur_Colonne :=
+        Curseur_Colonne.Matrice_Creuse :=
          new T_Colonne'
           (Colonne => 1, Suivante => null, Vecteur => Curseur_Cellule);
 
-        Mat.Matrice_Creuse := Curseur_Colonne;
+        Mat := Curseur_Colonne;
 
         while Index_Ligne < Mat.Lignes loop
           Nouvelle_Cellule :=
@@ -47,9 +47,9 @@ package body Matrice is
 
         while Index_Colonne < Mat.Colonnes loop
           Nouvelle_Colonne := Copie(Curseur_Colonne);
-          Nouvelle_Colonne.all.Colonne := Nouvelle_Colonne.all.Colonne + 1;
+          Nouvelle_Colonne.Matrice_Creuse.all.Colonne := Nouvelle_Colonne.Matrice_Creuse.all.Colonne + 1;
 
-          Curseur_Colonne.all.Suivante := Nouvelle_Colonne;
+          Curseur_Colonne.Matrice_Creuse.all.Suivante := Nouvelle_Colonne.Matrice_Creuse;
           Curseur_Colonne := Nouvelle_Colonne;
           Index_Colonne := Index_Colonne + 1;
         end loop;
@@ -77,7 +77,7 @@ package body Matrice is
       Curseur, Colonne_Prec, Nouvelle_Colonne : T_Matrice_Creuse;
 
       function Copie_Vect_Creux(Vect : T_Vecteur_Creux) return T_Vecteur_Creux is
-      Curseur, Cellule_Prec, Nouvelle_Cellule : T_Cellule;
+      Curseur, Cellule_Prec, Nouvelle_Cellule : T_Vecteur_Creux;
       Copie : T_Vecteur_Creux;
       begin
         Curseur := Vect;
@@ -110,8 +110,8 @@ package body Matrice is
             (Colonne => Curseur.all.Colonne, Suivante => Curseur.all.Suivante,
             Vecteur => Copie_Vect_Creux(Curseur.all.Vecteur));
         
-        if Cellule_Prec = null then
-          Copie := Nouvelle_Colonne;
+        if Colonne_Prec = null then
+          Copie.Matrice_Creuse := Nouvelle_Colonne;
         else
           Colonne_Prec.all.Suivante := Nouvelle_Colonne;
         end if;
@@ -139,7 +139,7 @@ package body Matrice is
       Curseur := Vect;
 
       while Curseur /= null loop
-        Suivant := Curseur.all.Suivant;
+        Suivant := Curseur.all.Suivante;
         Free_Cellule (Curseur);
         Curseur := Suivant;
       end loop;
@@ -155,7 +155,7 @@ package body Matrice is
         Curseur := Mat.Matrice_Creuse;
 
         while Curseur /= null loop
-          Suivant := Curseur.all.Suivant;
+          Suivant := Curseur.all.Suivante;
           Detruire_Vect_Creux (Curseur.all.Vecteur);
           Free_Colonne (Curseur);
           Curseur := Suivant;
@@ -164,37 +164,48 @@ package body Matrice is
     end if;
   end Detruire;
 
-  function Get (Mat : in T_Matrice; Ligne, Colonne : Positive) return T_Valeur is
-    
-    function TrouverParRecursion(Col: in T_Matrice_Creuse; Ligne, Colonne : in Positive) return T_Valeur is
-
-      function TrouverParRecursion_V
-        (Vect : in     T_Vecteur_Creux; Ligne : in Positive)
-        return T_Valeur is
-      begin
-        if Vect = null or else Vect.all.Ligne > Ligne then
-          return Zero;
-        elsif Vect.all.Ligne = Ligne then
-          return Vect.all.Valeur;
-        else
-          return TrouverParRecursion (Vect.all.Suivant, Ligne, Cellule);
-        end if;
-      end TrouverParRecursion_V;
-    
+  procedure TrouverParRecursion
+  (Col: in T_Matrice_Creuse; Ligne, Colonne : in Positive; Cellule: out T_Vecteur_Creux)
+  is
+    procedure TrouverParRecursion_V
+      (Vect : in     T_Vecteur_Creux; Ligne : in Positive; Cellule : out T_Vecteur_Creux)
+    is
     begin
-      if Col = null or else Col.all.Colonne > Colonne then
-        return Zero;
-      elsif Col.all.Colonne = Colonne then
-        return TrouverParRecursion_V(Col.all.Vecteur, Ligne);
+      if Vect = null or else Vect.all.Ligne > Ligne then
+        Cellule := null;
+      elsif Vect.all.Ligne = Ligne then
+        Cellule := Vect;
       else
-        return TrouverParRecursion(Col.all.Suivante, Ligne, Colonne);
+        TrouverParRecursion_V (Vect.all.Suivante, Ligne, Cellule);
       end if;
-    end TrouverParRecursion;
+    end TrouverParRecursion_V;
+  
+  begin
+    if Col = null or else Col.all.Colonne > Colonne then
+      Cellule := null;
+    elsif Col.all.Colonne = Colonne then
+      TrouverParRecursion_V(Col.all.Vecteur, Ligne, Cellule);
+    else
+      TrouverParRecursion(Col.all.Suivante, Ligne, Colonne, Cellule);
+    end if;
+  end TrouverParRecursion;
+
+  function Get (Mat : in T_Matrice; Ligne, Colonne : Positive) return T_Valeur is
   begin
     if Mat.Pleine then
       return Mat.Matrice_Pleine (Ligne, Colonne);
     else
-      return TrouverParRecursion (Mat.Matrice_Creuse, Ligne, Colonne);
+      declare
+        Cellule : T_Vecteur_Creux;
+      begin
+      TrouverParRecursion (Mat.Matrice_Creuse, Ligne, Colonne, Cellule);
+
+      if Cellule = null then
+        return Zero;
+      else
+        return Cellule.all.Valeur;
+      end if;
+      end;
     end if;
   end Get;
 
@@ -203,22 +214,23 @@ package body Matrice is
     Cellule, Cellule_Prec, Cellule_Suiv :    out T_Matrice_Creuse)
   is
   begin
-    if Matrice = null then
-      Cellule := null;
-    elsif Matrice.all.Ligne = Ligne and Matrice.all.Colonne = Colonne then
-      Cellule := Matrice;
-    elsif Matrice.all.Ligne > Ligne or
-     (Matrice.all.Ligne = Ligne and Matrice.all.Colonne > Colonne)
-    then
-      Cellule      := null;
-      Cellule_Suiv := Matrice;
-    else
-      Cellule_Prec := Matrice;
-      Cellule_Suiv := Matrice.all.Suivant;
-      TrouverParRecursion
-       (Matrice.all.Suivant, Ligne, Colonne, Cellule, Cellule_Prec,
-        Cellule_Suiv);
-    end if;
+    --  if Matrice = null then
+    --    Cellule := null;
+    --  elsif Matrice.all.Ligne = Ligne and Matrice.all.Colonne = Colonne then
+    --    Cellule := Matrice;
+    --  elsif Matrice.all.Ligne > Ligne or
+    --   (Matrice.all.Ligne = Ligne and Matrice.all.Colonne > Colonne)
+    --  then
+    --    Cellule      := null;
+    --    Cellule_Suiv := Matrice;
+    --  else
+    --    Cellule_Prec := Matrice;
+    --    Cellule_Suiv := Matrice.all.Suivant;
+    --    TrouverParRecursion
+    --     (Matrice.all.Suivant, Ligne, Colonne, Cellule, Cellule_Prec,
+    --      Cellule_Suiv);
+    --  end if;
+    null;
   end TrouverParRecursion;
 
   procedure Set
@@ -236,38 +248,39 @@ package body Matrice is
         (Col : in     T_Matrice_Creuse; Ligne, Colonne : in Positive;
           Val : in         T_Valeur) is
       begin
-        if 
+        null;
       end SetRecursif;
     begin
-      TrouverParRecursion
-       (Mat.Matrice_Creuse, Ligne, Colonne, Cellule, Cellule_Prec,
-        Cellule_Suiv);
+    null;
+      --  TrouverParRecursion
+      --   (Mat.Matrice_Creuse, Ligne, Colonne, Cellule, Cellule_Prec,
+      --    Cellule_Suiv);
 
-      if Val = Zero then
-        if Cellule /= null then
-          if Cellule_Prec = null then
-            Mat.Matrice_Creuse := Cellule.all.Suivant;
-          else
-            Cellule_Prec.all.Suivant := Cellule.all.Suivant;
-          end if;
-          Free (Cellule);
-        end if;
-      else
-        if Cellule = null then
-          Nouvelle_Cellule :=
-           new T_Cellule'
-            (Ligne   => Ligne, Colonne => Colonne, Valeur => Val,
-             Suivant => Cellule_Suiv);
+      --  if Val = Zero then
+        --  if Cellule /= null then
+        --    if Cellule_Prec = null then
+        --      Mat.Matrice_Creuse := Cellule.all.Suivant;
+        --    else
+        --      Cellule_Prec.all.Suivant := Cellule.all.Suivant;
+      --      end if;
+      --      Free (Cellule);
+      --    end if;
+      --  else
+      --    if Cellule = null then
+      --      Nouvelle_Cellule :=
+      --       new T_Cellule'
+      --        (Ligne   => Ligne, Colonne => Colonne, Valeur => Val,
+      --         Suivant => Cellule_Suiv);
 
-          if Cellule_Prec = null then
-            Mat.Matrice_Creuse := Nouvelle_Cellule;
-          else
-            Cellule_Prec.all.Suivant := Nouvelle_Cellule;
-          end if;
-        else
-          Cellule.all.Valeur := Val;
-        end if;
-      end if;
+      --      if Cellule_Prec = null then
+      --        Mat.Matrice_Creuse := Nouvelle_Cellule;
+      --      else
+      --        Cellule_Prec.all.Suivant := Nouvelle_Cellule;
+      --      end if;
+      --    else
+      --      Cellule.all.Valeur := Val;
+      --    end if;
+      --  end if;
     end Set_Creuse;
 
   begin
@@ -293,71 +306,72 @@ package body Matrice is
     procedure Addition_Creuse is
       Curseur_A, Curseur_B, Cellule_Prec, Nouvelle_Cellule : T_Matrice_Creuse;
     begin
-      Curseur_A := A.Matrice_Creuse;
-      Curseur_B := B.Matrice_Creuse;
+    null;
+      --  Curseur_A := A.Matrice_Creuse;
+      --  Curseur_B := B.Matrice_Creuse;
 
-      while Curseur_A /= null or Curseur_B /= null loop
-        if Curseur_A = null and Curseur_B /= null then
-          Nouvelle_Cellule :=
-           new T_Cellule'
-            (Ligne  => Curseur_B.all.Ligne, Colonne => Curseur_B.all.Colonne,
-             Valeur => Curseur_B.all.Valeur, Suivant => null);
+      --  while Curseur_A /= null or Curseur_B /= null loop
+      --    if Curseur_A = null and Curseur_B /= null then
+      --      Nouvelle_Cellule :=
+      --       new T_Cellule'
+      --        (Ligne  => Curseur_B.all.Ligne, Colonne => Curseur_B.all.Colonne,
+      --         Valeur => Curseur_B.all.Valeur, Suivant => null);
 
-          Curseur_B := Curseur_B.all.Suivant;
-        elsif Curseur_A /= null and Curseur_B = null then
-          Nouvelle_Cellule :=
-           new T_Cellule'
-            (Ligne  => Curseur_A.all.Ligne, Colonne => Curseur_A.all.Colonne,
-             Valeur => Curseur_A.all.Valeur, Suivant => null);
+      --      Curseur_B := Curseur_B.all.Suivant;
+      --    elsif Curseur_A /= null and Curseur_B = null then
+      --      Nouvelle_Cellule :=
+      --       new T_Cellule'
+      --        (Ligne  => Curseur_A.all.Ligne, Colonne => Curseur_A.all.Colonne,
+      --         Valeur => Curseur_A.all.Valeur, Suivant => null);
 
-          Curseur_A := Curseur_A.all.Suivant;
+      --      Curseur_A := Curseur_A.all.Suivant;
 
-        elsif Curseur_A.all.Ligne < Curseur_B.all.Ligne or
-         (Curseur_A.all.Ligne = Curseur_B.all.Ligne and
-          Curseur_A.all.Colonne < Curseur_B.all.Colonne)
-        then
-          Nouvelle_Cellule :=
-           new T_Cellule'
-            (Ligne  => Curseur_A.all.Ligne, Colonne => Curseur_A.all.Colonne,
-             Valeur => Curseur_A.all.Valeur, Suivant => null);
+      --    elsif Curseur_A.all.Ligne < Curseur_B.all.Ligne or
+      --     (Curseur_A.all.Ligne = Curseur_B.all.Ligne and
+      --      Curseur_A.all.Colonne < Curseur_B.all.Colonne)
+      --    then
+      --      Nouvelle_Cellule :=
+      --       new T_Cellule'
+      --        (Ligne  => Curseur_A.all.Ligne, Colonne => Curseur_A.all.Colonne,
+      --         Valeur => Curseur_A.all.Valeur, Suivant => null);
 
-          Curseur_A := Curseur_A.all.Suivant;
-        elsif Curseur_A.all.Ligne > Curseur_B.all.Ligne or
-         (Curseur_A.all.Ligne = Curseur_B.all.Ligne and
-          Curseur_A.all.Colonne > Curseur_B.all.Colonne)
-        then
-          Nouvelle_Cellule :=
-           new T_Cellule'
-            (Ligne  => Curseur_B.all.Ligne, Colonne => Curseur_B.all.Colonne,
-             Valeur => Curseur_B.all.Valeur, Suivant => null);
+      --      Curseur_A := Curseur_A.all.Suivant;
+      --    elsif Curseur_A.all.Ligne > Curseur_B.all.Ligne or
+      --     (Curseur_A.all.Ligne = Curseur_B.all.Ligne and
+      --      Curseur_A.all.Colonne > Curseur_B.all.Colonne)
+      --    then
+      --      Nouvelle_Cellule :=
+      --       new T_Cellule'
+      --        (Ligne  => Curseur_B.all.Ligne, Colonne => Curseur_B.all.Colonne,
+      --         Valeur => Curseur_B.all.Valeur, Suivant => null);
 
-          Curseur_B := Curseur_B.all.Suivant;
-        else
-          if Curseur_A.all.Valeur + Curseur_B.all.Valeur = Zero then
-            null;
-          else
-            Nouvelle_Cellule :=
-             new T_Cellule'
-              (Ligne => Curseur_A.all.Ligne, Colonne => Curseur_A.all.Colonne,
-               Valeur  => Curseur_A.all.Valeur + Curseur_B.all.Valeur,
-               Suivant => null);
+      --      Curseur_B := Curseur_B.all.Suivant;
+      --    else
+      --      if Curseur_A.all.Valeur + Curseur_B.all.Valeur = Zero then
+      --        null;
+      --      else
+      --        Nouvelle_Cellule :=
+      --         new T_Cellule'
+      --          (Ligne => Curseur_A.all.Ligne, Colonne => Curseur_A.all.Colonne,
+      --           Valeur  => Curseur_A.all.Valeur + Curseur_B.all.Valeur,
+      --           Suivant => null);
 
-          end if;
+      --      end if;
 
-          Curseur_A := Curseur_A.all.Suivant;
-          Curseur_B := Curseur_B.all.Suivant;
-        end if;
+      --      Curseur_A := Curseur_A.all.Suivant;
+      --      Curseur_B := Curseur_B.all.Suivant;
+      --    end if;
 
-        if Nouvelle_Cellule /= null then
-          if Cellule_Prec = null then
-            Mat.Matrice_Creuse := Nouvelle_Cellule;
-          else
-            Cellule_Prec.all.Suivant := Nouvelle_Cellule;
-          end if;
-          Cellule_Prec := Nouvelle_Cellule;
-        end if;
-        Nouvelle_Cellule := null;
-      end loop;
+      --    if Nouvelle_Cellule /= null then
+      --      if Cellule_Prec = null then
+      --        Mat.Matrice_Creuse := Nouvelle_Cellule;
+      --      else
+      --        Cellule_Prec.all.Suivant := Nouvelle_Cellule;
+      --      end if;
+      --      Cellule_Prec := Nouvelle_Cellule;
+      --    end if;
+      --    Nouvelle_Cellule := null;
+      --  end loop;
     end Addition_Creuse;
   begin
     -- Init(Mat, 0);
@@ -414,14 +428,16 @@ package body Matrice is
       --    Curseur_B := B_Transpose.Matrice_Creuse;
       --  end loop;
 
-      for I in 1 .. Mat.Lignes loop
-        for J in 1 .. Mat.Colonnes loop
-          Set (Mat, I, J, Get (A, I, 1) * Get (B, 1, J));
-          for K in 2 .. A.Colonnes loop
-            Set (Mat, I, J, Get (Mat, I, J) + Get (A, I, K) * Get (B, K, J));
-          end loop;
-        end loop;
-      end loop;
+      --  for I in 1 .. Mat.Lignes loop
+      --    for J in 1 .. Mat.Colonnes loop
+      --      Set (Mat, I, J, Get (A, I, 1) * Get (B, 1, J));
+      --      for K in 2 .. A.Colonnes loop
+      --        Set (Mat, I, J, Get (Mat, I, J) + Get (A, I, K) * Get (B, K, J));
+      --      end loop;
+      --    end loop;
+      --  end loop;
+
+      null;
 
     end Multiplication_Creuse;
   begin
@@ -456,11 +472,12 @@ package body Matrice is
     procedure Multiplication_Creuse is
       Curseur : T_Matrice_Creuse := A.Matrice_Creuse;
     begin
-      while Curseur /= null loop
-        Set
-         (Mat, Curseur.all.Ligne, Curseur.all.Colonne, Curseur.all.Valeur * B);
-        Curseur := Curseur.all.Suivant;
-      end loop;
+    null;
+      --  while Curseur /= null loop
+      --    Set
+      --     (Mat, Curseur.all.Ligne, Curseur.all.Colonne, Curseur.all.Valeur * B);
+      --    Curseur := Curseur.all.Suivant;
+      --  end loop;
     end Multiplication_Creuse;
 
   begin
@@ -495,11 +512,12 @@ package body Matrice is
     procedure Multiplication_Creuse is
       Curseur : T_Matrice_Creuse := B.Matrice_Creuse;
     begin
-      while Curseur /= null loop
-        Set
-         (Mat, Curseur.all.Ligne, Curseur.all.Colonne, Curseur.all.Valeur * A);
-        Curseur := Curseur.all.Suivant;
-      end loop;
+    null;
+      --  while Curseur /= null loop
+      --    Set
+      --     (Mat, Curseur.all.Ligne, Curseur.all.Colonne, Curseur.all.Valeur * A);
+      --    Curseur := Curseur.all.Suivant;
+      --  end loop;
     end Multiplication_Creuse;
 
   begin
@@ -526,14 +544,15 @@ package body Matrice is
     procedure Pour_Chaque_Creuse is
       Curseur : T_Matrice_Creuse := Mat.Matrice_Creuse;
     begin
-      if Curseur = null then
-        null;
-      else
-        while Curseur /= null loop
-          Traiter (Curseur.all.Ligne, Curseur.all.Colonne, Curseur.all.Valeur);
-          Curseur := Curseur.all.Suivant;
-        end loop;
-      end if;
+    null;
+      --  if Curseur = null then
+      --    null;
+      --  else
+      --    while Curseur /= null loop
+      --      Traiter (Curseur.all.Ligne, Curseur.all.Colonne, Curseur.all.Valeur);
+      --      Curseur := Curseur.all.Suivant;
+      --    end loop;
+      --  end if;
     end Pour_Chaque_Creuse;
   begin
     if Mat.Pleine then
@@ -562,12 +581,13 @@ package body Matrice is
     function Transpose_Creuse return T_Matrice is
       Curseur : T_Matrice_Creuse := A.Matrice_Creuse;
     begin
-      while Curseur /= null loop
-        Set (Mat, Curseur.all.Colonne, Curseur.all.Ligne, Curseur.all.Valeur);
-        Curseur := Curseur.all.Suivant;
-      end loop;
+      --  while Curseur /= null loop
+        --  Set (Mat, Curseur.all.Colonne, Curseur.all.Ligne, Curseur.all.Valeur);
+        --  Curseur := Curseur.all.Suivant;
+      --  end loop;
 
-      return Mat;
+      --  return Mat;
+      return A;
     end Transpose_Creuse;
 
   begin
