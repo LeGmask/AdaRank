@@ -23,10 +23,11 @@ package Matrice is
   -- @param Val : la valeur par défaut
 
   function Copie (Mat : in T_Matrice) return T_Matrice with
-   Post => Copie'Result.Lignes = Mat.Lignes and Copie'Result.Colonnes = Mat.Colonnes;
+   Post =>
+    Copie'Result.Lignes = Mat.Lignes and Copie'Result.Colonnes = Mat.Colonnes;
   -- Renvoie une copie d'une matrice
   -- @param Mat : la matrice à copier
-  
+
   procedure Detruire (Mat : in out T_Matrice);
   -- Détruit une matrice
   -- @param Mat : la matrice à détruire
@@ -49,16 +50,15 @@ package Matrice is
   -- Post => Dim(Mat)(0) = Mat'Length(0) and Dim(Mat)(1) = Mat'Length(1);
 
   function "+" (A, B : in T_Matrice) return T_Matrice with
-   Pre => A.Lignes = B.Lignes and A.Colonnes = B.Colonnes;
+   Pre => A.Lignes = B.Lignes and A.Colonnes = B.Colonnes
+   and A.Pleine = B.Pleine;
   -- Renvoie l'addition de deux matrices
   -- @param A : la première matrice
   -- @param B : la seconde matrice
 
   function "*" (A, B : in T_Matrice) return T_Matrice with
-   Pre  => A.Colonnes = B.Lignes,
-   Post =>
-    "*"'Result.Lignes = A.Lignes and
-    "*"'Result.Colonnes = B.Colonnes;
+   Pre  => A.Colonnes = B.Lignes and A.Pleine = B.Pleine,
+   Post => "*"'Result.Lignes = A.Lignes and "*"'Result.Colonnes = B.Colonnes;
   -- Renvoie le produit de deux matrices
   -- @param A : la première matrice
   -- @param B : la seconde matrice
@@ -103,8 +103,8 @@ private
   type T_Vecteur_Creux is access T_Cellule;
 
   type T_Cellule is record
-    Ligne   : Positive;
-    Valeur  : T_Valeur;
+    Ligne    : Positive;
+    Valeur   : T_Valeur;
     Suivante : T_Vecteur_Creux;
   end record;
 
@@ -113,11 +113,11 @@ private
 
   type T_Matrice_Creuse is access T_Colonne;
   -- Matrice creuse pour les opérations
-  
+
   type T_Colonne is record
-    Colonne : Positive;
+    Colonne  : Positive;
     Suivante : T_Matrice_Creuse;
-    Vecteur: T_Vecteur_Creux;
+    Vecteur  : T_Vecteur_Creux;
   end record;
 
   type T_Matrice (Lignes, Colonnes : Positive; Pleine : Boolean) is record
