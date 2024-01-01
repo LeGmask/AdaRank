@@ -17,8 +17,8 @@ package body Graphe is
             Get (File, I);
             Get (File, J);
 
-            Set (Adj, I + 1, J + 1, Get (Adj, I + 1, J + 1) + Defaut_Poid);
-            Set (Sortants, I + 1, 1, Get (Sortants, I + 1, 1) + Defaut_Poid);
+            Set (Adj, I + 1, J + 1, Defaut_Poid);
+            Set (Sortants, I + 1, 1, Defaut_Poid);
 
         end loop;
     exception
