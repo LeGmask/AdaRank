@@ -28,13 +28,15 @@ package body Graphe is
 
     procedure Ponderer_Graphe (Adj : in out T_Matrice; Sortants : in T_Matrice)
     is
-        Item : T_Valeur;
+        Dividende : T_Valeur;
+        Diviseur : T_Valeur;
     begin
         for I in 1 .. Adj.Lignes loop
+            Diviseur := Get (Sortants, I, 1);
             for J in 1 .. Adj.Colonnes loop
-                Item := Get (Adj, I, J);
-                if Item /= Zero then
-                    Set (Adj, I, J, Item / Get (Sortants, I, 1));
+                Dividende := Get (Adj, I, J);
+                if Dividende /= Zero then
+                    Set (Adj, I, J, Dividende / Diviseur);
                 end if;
             end loop;
         end loop;
