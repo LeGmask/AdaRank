@@ -3,7 +3,6 @@ with Ada.Float_Text_IO;     use Ada.Float_Text_IO;
 with Ada.Integer_Text_IO;   use Ada.Integer_Text_IO;
 with Ada.Command_Line;      use Ada.Command_Line;
 with Ada.Strings.Unbounded; use Ada.Strings.Unbounded;
-with Ada.Directories;
 with Matrice;
 with Graphe;
 with Trifusion;
@@ -154,9 +153,6 @@ begin
       raise PAS_DE_FICHIER;
    else
       Reseau := To_Unbounded_String (Argument (Argument_Count));
-      if not (Ada.Directories.Exists (To_String (Reseau))) then
-         raise EMPLACEMENT_INVALIDE;
-      end if;
    end if;
 
    while I < Argument_Count loop
@@ -228,7 +224,7 @@ exception
       Put_Line ("K invalide, veuillez relire votre appel");
    when SYNTAXE              =>
       Put_Line ("Syntaxe invalide, veuillez relire votre appel");
-   when EMPLACEMENT_INVALIDE =>
+   when NAME_ERROR =>
       Put_Line
         ("Emplacement du fichier invalide, veuillez relire votre appel");
    -- when others               =>
