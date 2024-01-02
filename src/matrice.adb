@@ -521,7 +521,7 @@ package body Matrice is
     procedure Multiplication_Creuse is
       Curseur_A, Curseur_B, Colonne_Prec, Nouvelle_Colonne : T_Matrice_Creuse;
       Cellule_Prec, Nouvelle_Cellule                       : T_Vecteur_Creux;
-      A_Transpose : constant T_Matrice (A.Colonnes, A.Lignes, A.Pleine) :=
+      A_Transpose : T_Matrice (A.Colonnes, A.Lignes, A.Pleine) :=
        Transpose (A);
     begin
       Curseur_B := B.Matrice_Creuse;
@@ -593,6 +593,7 @@ package body Matrice is
         --    end loop;
         --  end loop;
       end if;
+      Detruire (A_Transpose);
     end Multiplication_Creuse;
   begin
     if Mat.Pleine then
