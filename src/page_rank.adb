@@ -35,10 +35,9 @@ procedure Page_Rank is
    procedure Sauver is new Export_Resultats (Put_Element, Put_Element);
 
    procedure Algorithme
-     (Alpha       : in     Float; K : in Integer; Eps : in Float;
-      Prefixe     : in Unbounded_String; N : in Integer; Plein : in Boolean;
-      H, Sortants : in out T_Matrice; Pi : out T_Matrice;
-      Ordre       :    out Matrice_Integer.T_Matrice)
+     (Alpha : in     Float; K : in Integer; Eps : in Float; N : in Integer;
+      Plein : in Boolean; H, Sortants : in out T_Matrice; Pi : out T_Matrice;
+      Ordre :    out Matrice_Integer.T_Matrice)
    is
 
       function Norme (A : in T_Matrice) return Float is
@@ -92,12 +91,12 @@ procedure Page_Rank is
 
       -- Calcul du Pi utilisé pour la norme
       Pi_detruire := Pi_avant * (-1.0);
-      Pi_norm := Pi + Pi_detruire;
+      Pi_norm     := Pi + Pi_detruire;
       Detruire (Pi_detruire);
 
       while (I < K) and then Norme (Pi_norm) > Eps loop
          Detruire (Pi_avant);
-         Pi_avant    := Copie (Pi);
+         Pi_avant := Copie (Pi);
 
          Pi_detruire := Pi;
          Pi          := Pi * G;
@@ -106,7 +105,7 @@ procedure Page_Rank is
          -- Calcul du Pi utilisé pour la norme
          Detruire (Pi_norm); -- On détruit l'ancien Pi_norm
          Pi_detruire := Pi_avant * (-1.0);
-         Pi_norm := Pi + Pi_detruire;
+         Pi_norm     := Pi + Pi_detruire;
          Detruire (Pi_detruire);
 
          I := I + 1;
@@ -126,12 +125,11 @@ procedure Page_Rank is
       Detruire (Sortants);
    end Algorithme;
 
-   ALPHA_INVALIDE       : exception;
-   EPS_INVALIDE         : exception;
-   K_INVALIDE           : exception;
-   PAS_DE_FICHIER       : exception;
-   EMPLACEMENT_INVALIDE : exception;
-   SYNTAXE              : exception;
+   ALPHA_INVALIDE : exception;
+   EPS_INVALIDE   : exception;
+   K_INVALIDE     : exception;
+   PAS_DE_FICHIER : exception;
+   SYNTAXE        : exception;
 
    File : Ada.Text_IO.File_Type;
 
@@ -206,7 +204,7 @@ begin
       Lire_Graphe (File, H, Sortants);
       Close (File);
       Ponderer_Graphe (H, Sortants);
-      Algorithme (Alpha, K, Eps, Prefixe, N, Plein, H, Sortants, Pi, Ordre);
+      Algorithme (Alpha, K, Eps, N, Plein, H, Sortants, Pi, Ordre);
       Sauver (Pi, Ordre, N, K, Alpha, To_String (Prefixe));
       Detruire (Pi);
       Matrice_Integer.Detruire (Ordre);
@@ -214,17 +212,17 @@ begin
 
    --! Vérifier si les arguments sont valides
 exception
-   when PAS_DE_FICHIER       =>
+   when PAS_DE_FICHIER =>
       Put_Line ("Pas de fichier fourni, veuillez relire votre appel");
-   when ALPHA_INVALIDE       =>
+   when ALPHA_INVALIDE =>
       Put_Line ("Alpha invalide, veuillez relire votre appel");
-   when EPS_INVALIDE         =>
+   when EPS_INVALIDE   =>
       Put_Line ("Epsilon invalide, veuillez relire votre appel");
-   when K_INVALIDE           =>
+   when K_INVALIDE     =>
       Put_Line ("K invalide, veuillez relire votre appel");
-   when SYNTAXE              =>
+   when SYNTAXE        =>
       Put_Line ("Syntaxe invalide, veuillez relire votre appel");
-   when NAME_ERROR =>
+   when Name_Error     =>
       Put_Line
         ("Emplacement du fichier invalide, veuillez relire votre appel");
    -- when others               =>
