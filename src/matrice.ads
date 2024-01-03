@@ -108,24 +108,16 @@ private
     Suivante : T_Vecteur_Creux;
   end record;
 
-  type T_Colonne;
-  -- Colonne pour T_Matrice_Creuse
-
-  type T_Matrice_Creuse is access T_Colonne;
+  type T_Matrice_Creuse is
+   array (Positive range <>) of T_Vecteur_Creux;
   -- Matrice creuse pour les opérations
-
-  type T_Colonne is record
-    Colonne  : Positive;
-    Suivante : T_Matrice_Creuse;
-    Vecteur  : T_Vecteur_Creux;
-  end record;
 
   type T_Matrice (Lignes, Colonnes : Positive; Pleine : Boolean) is record
     case Pleine is
       when True =>
         Matrice_Pleine : T_Matrice_Pleine (1 .. Lignes, 1 .. Colonnes);
       when False =>
-        Matrice_Creuse : T_Matrice_Creuse;
+        Matrice_Creuse : T_Matrice_Creuse (1 .. Colonnes);
     end case;
   end record;
 end Matrice;
