@@ -17,7 +17,7 @@ clean:
 
 test:
 	mkdir -p build
-	cd build/ && gnatmake -gnatwa -gnata -d -gnat2022 -aI../src/ -g ../tests/tests.adb
+	cd build/ && gnatmake -gnatwa -gnata -d -aI../src/ -g ../tests/tests.adb
 
 # pass arguments through ARGS="arg1 arg2" make run
 run:
