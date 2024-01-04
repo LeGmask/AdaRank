@@ -132,6 +132,50 @@ procedure Test_Matrice is
     Detruire (D);
   end Tester_Mult;
 
+  procedure Tester_Mult_Mixte is 
+    A : T_Matrice (3, 3, True);
+    B : T_Matrice (3, 3, False);
+    C : T_Matrice (3, 3, True);
+  begin
+    Set (A, 1, 1, 1);
+    Set (A, 1, 2, 2);
+    Set (A, 1, 3, 3);
+    Set (A, 2, 1, 4);
+    Set (A, 2, 2, 5);
+    Set (A, 2, 3, 6);
+    Set (A, 3, 1, 7);
+    Set (A, 3, 2, 8);
+    Set (A, 3, 3, 9);
+
+    Set (B, 1, 1, 1);
+    --  Set (B, 1, 2, 2);
+    Set (B, 1, 3, 3);
+    Set (B, 2, 1, 4);
+    --  Set (B, 2, 2, 5);
+    --  Set (B, 2, 3, 6);
+    Set (B, 3, 1, 7);
+    --  Set (B, 3, 2, 8);
+    Set (B, 3, 3, 9);
+
+
+    C := A * B;
+    pragma Assert
+      (Get (C, 1, 1) = 30 and Get (C, 1, 2) = 0 and Get (C, 1, 3) = 30 and
+       Get (C, 2, 1) = 66 and Get (C, 2, 2) = 0 and Get (C, 2, 3) = 66 and
+       Get (C, 3, 1) = 102 and Get (C, 3, 2) = 0 and Get (C, 3, 3) = 102);
+    Detruire (C);
+
+    C := B * A;
+    pragma Assert
+      (Get (C, 1, 1) = 22 and Get (C, 1, 2) = 26 and Get (C, 1, 3) = 30 and
+       Get (C, 2, 1) = 4 and Get (C, 2, 2) = 8 and Get (C, 2, 3) = 12 and
+       Get (C, 3, 1) = 70 and Get (C, 3, 2) = 86 and Get (C, 3, 3) = 102);
+       
+    Detruire (C);
+    Detruire (A);
+    Detruire (B);
+  end Tester_Mult_Mixte;
+
   procedure Tester_Transpose (Pleine : in Boolean) is
     A : T_Matrice (3, 2, Pleine);
     B : T_Matrice (2, 3, Pleine);
@@ -194,6 +238,11 @@ begin
 
   Put ("  -> Test de la transposée... ");
   Tester_Transpose (True);
+  Put_Line ("OK");
+
+  Put_Line (" - Mode mixte :");
+  Put ("  -> Test de la multiplication... ");
+  Tester_Mult_Mixte;
   Put_Line ("OK");
   Put_Line ("<<< Module Matrice OK");
 end Test_Matrice;
