@@ -1,4 +1,4 @@
-with Ada.Text_IO; use Ada.Text_IO;
+with Ada.Text_IO;         use Ada.Text_IO;
 with Ada.Integer_Text_IO; use Ada.Integer_Text_IO;
 with Matrice;
 
@@ -46,9 +46,10 @@ procedure Test_Matrice is
     Get (File, N);
 
     declare
-      Mat : T_Matrice_Float.T_Matrice (N, N, Pleine);
+      Mat      : T_Matrice_Float.T_Matrice (N, N, Pleine);
+      Sortants : T_Matrice_Float.T_Matrice (N, 1, Pleine);
     begin
-      T_Matrice_Float.Init_Fichier (File, Mat);
+      T_Matrice_Float.Init_Fichier (File, Mat, Sortants);
 
       --  pragma Assert
       --   (Get (G, 1, 1) = 0.0 and Get (G, 1, 2) = 1.0 and Get (G, 1, 3) = 1.0 and
@@ -59,11 +60,23 @@ procedure Test_Matrice is
       --    Get (Sortants, 3, 1) = 1.0);
 
       --  Ponderer_Graphe (G, Sortants);
+      if Pleine then
+        pragma Assert
+         (T_Matrice_Float.Get (Sortants, 1, 1) = 2.0 and
+          T_Matrice_Float.Get (Sortants, 2, 1) = 1.0 and
+          T_Matrice_Float.Get (Sortants, 3, 1) = 2.0);
+      end if;
 
       pragma Assert
-       (T_Matrice_Float.Get (Mat, 1, 1) = 0.0 and T_Matrice_Float.Get (Mat, 1, 2) = 0.5 and T_Matrice_Float.Get (Mat, 1, 3) = 0.5 and
-        T_Matrice_Float.Get (Mat, 2, 1) = 0.0 and T_Matrice_Float.Get (Mat, 2, 2) = 0.0 and T_Matrice_Float.Get (Mat, 2, 3) = 1.0 and
-        T_Matrice_Float.Get (Mat, 3, 1) = 0.0 and T_Matrice_Float.Get (Mat, 3, 2) = 1.0 and T_Matrice_Float.Get (Mat, 3, 3) = 0.0);
+       (T_Matrice_Float.Get (Mat, 1, 1) = 0.0 and
+        T_Matrice_Float.Get (Mat, 1, 2) = 0.5 and
+        T_Matrice_Float.Get (Mat, 1, 3) = 0.5 and
+        T_Matrice_Float.Get (Mat, 2, 1) = 0.0 and
+        T_Matrice_Float.Get (Mat, 2, 2) = 0.0 and
+        T_Matrice_Float.Get (Mat, 2, 3) = 1.0 and
+        T_Matrice_Float.Get (Mat, 3, 1) = 0.5 and
+        T_Matrice_Float.Get (Mat, 3, 2) = 0.5 and
+        T_Matrice_Float.Get (Mat, 3, 3) = 0.0);
 
       T_Matrice_Float.Detruire (Mat);
     end;
