@@ -47,7 +47,7 @@ procedure Test_Matrice is
 
     declare
       Mat      : T_Matrice_Float.T_Matrice (N, N, Pleine);
-      Sortants : T_Matrice_Float.T_Matrice (N, 1, Pleine);
+      Sortants : T_Matrice_Float.T_Matrice (N, 1, True);
     begin
       T_Matrice_Float.Init_Fichier (File, Mat, Sortants);
 
