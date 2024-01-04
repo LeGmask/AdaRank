@@ -1,7 +1,10 @@
+with Ada.Text_IO; use Ada.Text_IO;
+
 generic
   type T_Valeur is private; -- Type des valeurs de la matrice
 
   Zero : in T_Valeur; -- Zero pour l'addition
+  Un : in T_Valeur;  -- Un pour l'initialisation
 
   with function "+"
    (Gauche : in T_Valeur; Droite : in T_Valeur) return T_Valeur;
@@ -13,6 +16,10 @@ generic
   -- Renvoie le produit de deux T_Valeurs
   -- @param Gauche : la T_Valeur de gauche
   -- @param Droite : la T_Valeur de droite
+  with function "/" (A : T_Valeur; B : T_Valeur) return T_Valeur;
+  -- Division entre deux T_Valeurs
+  -- @param A : Numérateur
+  -- @param B : Dénominateur
 package Matrice is
   -- type T_Dim is array (1 .. 2) of Integer;
   type T_Matrice (Lignes, Colonnes : Positive; Pleine : Boolean) is private;
@@ -21,6 +28,11 @@ package Matrice is
   -- Initialise une matrice avec une valeur par défaut
   -- @param Mat : la matrice à initialiser
   -- @param Val : la valeur par défaut
+
+  procedure Init_Fichier (File : in File_Type; Mat : out T_Matrice);
+  -- Crée une matrice à partir d'un fichier
+  -- @param File : Fichier contenant la description du graphe
+  -- @param Mat : Matrice d'adjacence à créer
 
   function Copie (Mat : in T_Matrice) return T_Matrice with
    Post =>
@@ -50,8 +62,8 @@ package Matrice is
   -- Post => Dim(Mat)(0) = Mat'Length(0) and Dim(Mat)(1) = Mat'Length(1);
 
   function "+" (A, B : in T_Matrice) return T_Matrice with
-   Pre => A.Lignes = B.Lignes and A.Colonnes = B.Colonnes
-   and A.Pleine = B.Pleine;
+   Pre =>
+    A.Lignes = B.Lignes and A.Colonnes = B.Colonnes and A.Pleine = B.Pleine;
   -- Renvoie l'addition de deux matrices
   -- @param A : la première matrice
   -- @param B : la seconde matrice
@@ -108,8 +120,7 @@ private
     Suivante : T_Vecteur_Creux;
   end record;
 
-  type T_Matrice_Creuse is
-   array (Positive range <>) of T_Vecteur_Creux;
+  type T_Matrice_Creuse is array (Positive range <>) of T_Vecteur_Creux;
   -- Matrice creuse pour les opérations
 
   type T_Matrice (Lignes, Colonnes : Positive; Pleine : Boolean) is record

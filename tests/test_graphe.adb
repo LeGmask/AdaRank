@@ -5,7 +5,7 @@ with Matrice;
 
 procedure Test_Graphe is
 
-  package Matrice_Float is new Matrice (Float, 0.0, "+", "*");
+  package Matrice_Float is new Matrice (Float, 0.0, 1.0, "+", "*", "/");
   use Matrice_Float;
   package Graphe_Float is new Graphe (Matrice_Float, 1.0, "/");
   use Graphe_Float;

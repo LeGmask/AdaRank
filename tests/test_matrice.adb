@@ -1,9 +1,11 @@
 with Ada.Text_IO; use Ada.Text_IO;
+with Ada.Integer_Text_IO; use Ada.Integer_Text_IO;
 with Matrice;
 
 procedure Test_Matrice is
   package T_Matrice_Int is new Matrice
-   (T_Valeur => Integer, Zero => 0, "+" => Standard."+", "*" => Standard."*");
+   (T_Valeur => Integer, Zero => 0, Un => 1, "+" => Standard."+",
+    "*"      => Standard."*", "/" => Standard."/");
   use T_Matrice_Int;
 
   procedure Tester_Init (Pleine : in Boolean) is
@@ -31,6 +33,43 @@ procedure Test_Matrice is
     Detruire (A);
     Detruire (B);
   end Tester_Init;
+
+  procedure Tester_Init_Fichier (Pleine : in Boolean) is
+    File : File_Type;
+    N    : Integer;
+
+    package T_Matrice_Float is new Matrice
+     (T_Valeur => Float, Zero => 0.0, Un => 1.0, "+" => Standard."+",
+      "*"      => Standard."*", "/" => Standard."/");
+  begin
+    Open (File, In_File, "networks/test.net");
+    Get (File, N);
+
+    declare
+      Mat : T_Matrice_Float.T_Matrice (N, N, Pleine);
+    begin
+      T_Matrice_Float.Init_Fichier (File, Mat);
+
+      --  pragma Assert
+      --   (Get (G, 1, 1) = 0.0 and Get (G, 1, 2) = 1.0 and Get (G, 1, 3) = 1.0 and
+      --    Get (Sortants, 1, 1) = 2.0 and Get (G, 2, 1) = 0.0 and
+      --    Get (G, 2, 2) = 0.0 and Get (G, 2, 3) = 1.0 and
+      --    Get (Sortants, 2, 1) = 1.0 and Get (G, 3, 1) = 0.0 and
+      --    Get (G, 3, 2) = 1.0 and Get (G, 3, 3) = 0.0 and
+      --    Get (Sortants, 3, 1) = 1.0);
+
+      --  Ponderer_Graphe (G, Sortants);
+
+      pragma Assert
+       (T_Matrice_Float.Get (Mat, 1, 1) = 0.0 and T_Matrice_Float.Get (Mat, 1, 2) = 0.5 and T_Matrice_Float.Get (Mat, 1, 3) = 0.5 and
+        T_Matrice_Float.Get (Mat, 2, 1) = 0.0 and T_Matrice_Float.Get (Mat, 2, 2) = 0.0 and T_Matrice_Float.Get (Mat, 2, 3) = 1.0 and
+        T_Matrice_Float.Get (Mat, 3, 1) = 0.0 and T_Matrice_Float.Get (Mat, 3, 2) = 1.0 and T_Matrice_Float.Get (Mat, 3, 3) = 0.0);
+
+      T_Matrice_Float.Detruire (Mat);
+    end;
+
+    Close (File);
+  end Tester_Init_Fichier;
 
   procedure Tester_Copie (Pleine : in Boolean) is
     A : T_Matrice (3, 3, Pleine);
@@ -132,7 +171,7 @@ procedure Test_Matrice is
     Detruire (D);
   end Tester_Mult;
 
-  procedure Tester_Mult_Mixte is 
+  procedure Tester_Mult_Mixte is
     A : T_Matrice (3, 3, True);
     B : T_Matrice (3, 3, False);
     C : T_Matrice (3, 3, True);
@@ -157,20 +196,19 @@ procedure Test_Matrice is
     --  Set (B, 3, 2, 8);
     Set (B, 3, 3, 9);
 
-
     C := A * B;
     pragma Assert
-      (Get (C, 1, 1) = 30 and Get (C, 1, 2) = 0 and Get (C, 1, 3) = 30 and
-       Get (C, 2, 1) = 66 and Get (C, 2, 2) = 0 and Get (C, 2, 3) = 66 and
-       Get (C, 3, 1) = 102 and Get (C, 3, 2) = 0 and Get (C, 3, 3) = 102);
+     (Get (C, 1, 1) = 30 and Get (C, 1, 2) = 0 and Get (C, 1, 3) = 30 and
+      Get (C, 2, 1) = 66 and Get (C, 2, 2) = 0 and Get (C, 2, 3) = 66 and
+      Get (C, 3, 1) = 102 and Get (C, 3, 2) = 0 and Get (C, 3, 3) = 102);
     Detruire (C);
 
     C := B * A;
     pragma Assert
-      (Get (C, 1, 1) = 22 and Get (C, 1, 2) = 26 and Get (C, 1, 3) = 30 and
-       Get (C, 2, 1) = 4 and Get (C, 2, 2) = 8 and Get (C, 2, 3) = 12 and
-       Get (C, 3, 1) = 70 and Get (C, 3, 2) = 86 and Get (C, 3, 3) = 102);
-       
+     (Get (C, 1, 1) = 22 and Get (C, 1, 2) = 26 and Get (C, 1, 3) = 30 and
+      Get (C, 2, 1) = 4 and Get (C, 2, 2) = 8 and Get (C, 2, 3) = 12 and
+      Get (C, 3, 1) = 70 and Get (C, 3, 2) = 86 and Get (C, 3, 3) = 102);
+
     Detruire (C);
     Detruire (A);
     Detruire (B);
@@ -203,6 +241,10 @@ begin
   Tester_Init (False);
   Put_Line ("OK");
 
+  Put ("  -> Test de l'initialisation par fichier... ");
+  Tester_Init_Fichier (False);
+  Put_Line ("OK");
+
   Put ("  -> Test de la copie... ");
   Tester_Copie (False);
   Put_Line ("OK");
@@ -220,8 +262,13 @@ begin
   Put_Line ("OK");
 
   Put_Line (" - Mode plein :");
+
   Put ("  -> Test de l'initialisation... ");
   Tester_Init (True);
+  Put_Line ("OK");
+
+  Put ("  -> Test de l'initialisation par fichier... ");
+  Tester_Init_Fichier (True);
   Put_Line ("OK");
 
   Put ("  -> Test de la copie... ");

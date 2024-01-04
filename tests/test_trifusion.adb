@@ -4,8 +4,8 @@ with Ada.Text_IO; use Ada.Text_IO;
 
 procedure Test_Trifusion is
 
-    package Matrice_Integer is new Matrice (Integer, 0, "+", "*");
-    package Matrice_Float is new Matrice (Float, 0.0, "+", "*");
+    package Matrice_Integer is new Matrice (Integer, 0, 1, "+", "*", "/");
+    package Matrice_Float is new Matrice (Float, 0.0, 1.0, "+", "*", "/");
 
     package Trifusion_Float is new Trifusion
        (Matrice_Float, Matrice_Integer, "<");

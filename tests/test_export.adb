@@ -6,9 +6,9 @@ with Ada.Integer_Text_IO; use Ada.Integer_Text_IO;
 
 procedure Test_export is
 
-   package Matrice_Integer is new Matrice (Integer, 0, "+", "*");
+   package Matrice_Integer is new Matrice (Integer, 0, 1, "+", "*", "/");
 
-   package Matrice_Float is new Matrice (Float, 0.0, "+", "*");
+   package Matrice_Float is new Matrice (Float, 0.0, 1.0, "+", "*", "/");
 
    package Export_PageRank is new Export
      (Matrice_Pi => Matrice_Float, Matrice_Ordre => Matrice_Integer);

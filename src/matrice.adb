@@ -1,5 +1,6 @@
 --  with Ada.Strings.Fixed; use Ada.Strings.Fixed;
-with Ada.Text_IO; use Ada.Text_IO;
+--  with Ada.Text_IO; use Ada.Text_IO;
+with Ada.Integer_Text_IO; use Ada.Integer_Text_IO;
 with Ada.Unchecked_Deallocation;
 
 package body Matrice is
@@ -74,6 +75,101 @@ package body Matrice is
       Init_Creuse;
     end if;
   end Init;
+
+  procedure Init_Fichier (File : in File_Type; Mat : out T_Matrice) is
+    I, J : Integer;
+
+    procedure Init_Fichier_Plein is
+      Sommet_Courant              : Integer := 0;
+      Facteur_Ponderation_Courant : T_Valeur;
+    begin
+      Init (Mat);
+      -- tant que le fichier n'est pas fini ou la ligne n'est pas vide
+      while not End_Of_File (File) loop
+        if End_Of_Line (File) then
+          Skip_Line (File);
+        end if;
+
+        Get (File, I);
+
+        if I /= Sommet_Courant then
+          if I /= 0 then
+            for J in 1 .. Mat.Colonnes loop
+              Set
+               (Mat, Sommet_Courant + 1, J,
+                Get (Mat, Sommet_Courant + 1, J) /
+                Facteur_Ponderation_Courant);
+            end loop;
+          end if;
+          Sommet_Courant              := I;
+          Facteur_Ponderation_Courant := Un;
+        else
+          Facteur_Ponderation_Courant := Facteur_Ponderation_Courant + Un;
+        end if;
+
+        Get (File, J);
+        Set (Mat, I + 1, J + 1, Un);
+      end loop;
+    exception
+      when End_Error =>
+        null;
+    end Init_Fichier_Plein;
+
+    procedure Init_Fichier_Creuse is
+      Curseurs : array (1 .. Mat.Colonnes) of T_Vecteur_Creux :=
+       (others => null);
+
+      Sommet_Courant              : Integer := 0;
+      Facteur_Ponderation_Courant : T_Valeur;
+      Valeur : T_Valeur;
+    begin
+      while not End_Of_File (File) loop
+        if End_Of_Line (File) then
+          Skip_Line (File);
+        end if;
+
+        Get (File, I); -- on récupère l'arète actuelle
+
+        if I /= Sommet_Courant then -- ie. on a changé d'arrête
+          -- On change de sommet relecture des curseurs pour les ponderer
+          Valeur := Un / Facteur_Ponderation_Courant; -- avoid computing foreach Mat.Colonnes...
+          for J in 1 .. Mat.Colonnes loop
+            if Curseurs (J) /= null and then Curseurs (J).all.Ligne = I then
+              Curseurs (J).all.Valeur := Valeur;
+            end if;
+          end loop;
+
+          Sommet_Courant              := I;
+          Facteur_Ponderation_Courant := Un;
+        else
+          Facteur_Ponderation_Courant := Facteur_Ponderation_Courant + Un;
+        end if;
+
+        Get (File, J); -- on récupère la colonne
+        J := J + 1; -- on décale de 1 pour avoir un indice de 1 à n
+        -- mets a jour le curseur
+        if Curseurs (J) = null then -- le curseurs n'existe pas encore
+          Curseurs (J)           :=
+           new T_Cellule'(Ligne => I + 1, Valeur => Un, Suivante => null);
+          Mat.Matrice_Creuse (J) := Curseurs (J);
+        else
+          Curseurs (J).all.Suivante :=
+           new T_Cellule'(Ligne => I + 1, Valeur => Un, Suivante => null);
+          Curseurs (J)              := Curseurs (J).all.Suivante;
+        end if;
+      end loop;
+    exception
+      when End_Error =>
+        null;
+    end Init_Fichier_Creuse;
+  begin
+
+    if Mat.Pleine then
+      Init_Fichier_Plein;
+    else
+      Init_Fichier_Creuse;
+    end if;
+  end Init_Fichier;
 
   function Copie (Mat : in T_Matrice) return T_Matrice is
     Copie : T_Matrice (Mat.Lignes, Mat.Colonnes, Mat.Pleine);
