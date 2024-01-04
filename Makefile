@@ -2,6 +2,10 @@ make:
 	mkdir -p build
 	cd build && gnatmake -gnatwa -gnata -g -d ../src/page_rank.adb
 
+make_profiler:
+	mkdir -p build
+	cd build && gnatmake -gnatwa -gnata -g -d -pg ../src/page_rank.adb
+
 clean:
 	cd build/ && gnatclean ../src/*.adb && gnatclean ../tests/*.adb
 	rm -f *.prw *.pr
