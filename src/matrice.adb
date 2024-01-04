@@ -83,14 +83,14 @@ package body Matrice is
     I, J : Integer;
 
     procedure Init_Fichier_Plein is
-      Sommet_Courant              : Integer  := 0;
+      Sommet_Courant : Integer := 0;
 
       procedure Ponderer is
       begin
         for J in 1 .. Mat.Colonnes loop
           if Get (Mat, Sommet_Courant, J) /= Zero then
-            Set (Mat, Sommet_Courant, J,
-                 Un / Get (Sortants, Sommet_Courant, 1));
+            Set
+             (Mat, Sommet_Courant, J, Un / Get (Sortants, Sommet_Courant, 1));
           end if;
         end loop;
       end Ponderer;
@@ -138,13 +138,19 @@ package body Matrice is
         end loop;
 
         for I in 1 .. Mat.Lignes loop
-          for J in 1 .. Mat.Colonnes loop
-            if Curseurs (J) /= null and then Curseurs (J).all.Ligne = I then
-              Curseurs (J).all.Valeur :=
-               Curseurs (J).all.Valeur / Get (Sortants, I, 1);
-              Curseurs (J)            := Curseurs (J).all.Suivante;
-            end if;
-          end loop;
+          -- si I modulo 100
+          if I mod 10000 = 0 then
+            Put_Line ("I = " & I'Image);
+          end if;
+          if Get (Sortants, I, 1) /= Zero then
+            for J in 1 .. Mat.Colonnes loop
+              if Curseurs (J) /= null and then Curseurs (J).all.Ligne = I then
+                Curseurs (J).all.Valeur :=
+                 Curseurs (J).all.Valeur / Get (Sortants, I, 1);
+                Curseurs (J)            := Curseurs (J).all.Suivante;
+              end if;
+            end loop;
+          end if;
         end loop;
       end Ponderer;
 
