@@ -4,19 +4,16 @@ with Ada.Integer_Text_IO;   use Ada.Integer_Text_IO;
 with Ada.Command_Line;      use Ada.Command_Line;
 with Ada.Strings.Unbounded; use Ada.Strings.Unbounded;
 with Matrice;
-with Graphe;
 with Trifusion;
 with Export;
 
 procedure Page_Rank is
    package Matrice_Float is new Matrice
-     (Float, 0.0, Standard."+", Standard."*");
+     (Float, 0.0, 1.0, Standard."+", Standard."*", Standard."/");
    use Matrice_Float;
    package Matrice_Integer is new Matrice
-     (Integer, 0, Standard."+", Standard."*");
+     (Integer, 0, 1, Standard."+", Standard."*", Standard."/");
 
-   package Graphe_Float is new Graphe (Matrice_Float, 1.0, "/");
-   use Graphe_Float;
    package Tri_Fusion is new Trifusion (Matrice_Float, Matrice_Integer, "<");
 
    package Export_PageRank is new Export
@@ -203,9 +200,8 @@ begin
       Pi       : T_Matrice (1, N, True);
       Ordre    : Matrice_Integer.T_Matrice (1, N, True);
    begin
-      Lire_Graphe (File, H, Sortants);
+      Init_Fichier (File, H, Sortants);
       Close (File);
-      Ponderer_Graphe (H, Sortants);
       Algorithme (Alpha, K, Eps, N, Plein, H, Sortants, Pi, Ordre);
       Sauver (Pi, Ordre, N, K, Alpha, To_String (Prefixe));
       Detruire (Pi);
