@@ -51,13 +51,6 @@ procedure Test_Matrice is
     begin
       T_Matrice_Float.Init_Fichier (File, Mat, Sortants);
 
-      if Pleine then
-        pragma Assert
-         (T_Matrice_Float.Get (Sortants, 1, 1) = 2.0 and
-          T_Matrice_Float.Get (Sortants, 2, 1) = 1.0 and
-          T_Matrice_Float.Get (Sortants, 3, 1) = 3.0);
-      end if;
-      
       pragma Assert
        (T_Matrice_Float.Get (Mat, 1, 1) = 0.0 and
         T_Matrice_Float.Get (Mat, 1, 2) = 0.5 and

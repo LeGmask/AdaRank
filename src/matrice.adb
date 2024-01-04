@@ -131,29 +131,6 @@ package body Matrice is
 
       Sommet_Courant : Integer := 0;
 
-      procedure Ponderer is
-      begin
-        for J in 1 .. Mat.Colonnes loop -- réinitialise les curseurs
-          Curseurs (J) := Mat.Matrice_Creuse (J);
-        end loop;
-
-        for I in 1 .. Mat.Lignes loop
-          -- si I modulo 100
-          if I mod 10000 = 0 then
-            Put_Line ("I = " & I'Image);
-          end if;
-          if Get (Sortants, I, 1) /= Zero then
-            for J in 1 .. Mat.Colonnes loop
-              if Curseurs (J) /= null and then Curseurs (J).all.Ligne = I then
-                Curseurs (J).all.Valeur :=
-                 Curseurs (J).all.Valeur / Get (Sortants, I, 1);
-                Curseurs (J)            := Curseurs (J).all.Suivante;
-              end if;
-            end loop;
-          end if;
-        end loop;
-      end Ponderer;
-
       procedure Maj_Curseurs (Colonne : in Integer) is
       begin
         if Curseurs (Colonne) = null then -- le curseurs n'existe pas encore
@@ -217,6 +194,8 @@ package body Matrice is
       end Maj_Curseurs;
 
     begin
+      -- Active le mode ponderation de la matrice
+      Mat.Poids := (others => Zero);
 
       while not End_Of_File (File) loop
         begin
@@ -232,9 +211,10 @@ package body Matrice is
 
             Sommet_Courant := I + 1;
           end if;
-          Set
-           (Sortants, Sommet_Courant, 1,
-            Get (Sortants, Sommet_Courant, 1) + Un);
+          --  Set
+          --   (Sortants, Sommet_Courant, 1,
+          --    Get (Sortants, Sommet_Courant, 1) + Un);
+          Mat.Poids (Sommet_Courant) := Mat.Poids (Sommet_Courant) + Un;
 
           Get (File, J); -- on récupère la colonne
           J := J + 1; -- on décale de 1 pour avoir un indice de 1 à n
@@ -246,7 +226,7 @@ package body Matrice is
             null;
         end;
       end loop;
-      Ponderer;
+      --  Ponderer;
     end Init_Fichier_Creuse;
   begin
     Init (Sortants);
@@ -279,6 +259,8 @@ package body Matrice is
     else
       Copier_Creuse;
     end if;
+
+    Copie.Poids       := Mat.Poids;
 
     return Copie;
   end Copie;
@@ -325,7 +307,7 @@ package body Matrice is
   is
   begin
     if Mat.Pleine then
-      return Mat.Matrice_Pleine (Ligne, Colonne);
+      return Mat.Matrice_Pleine (Ligne, Colonne) / Mat.Poids (Ligne);
     else
       declare
         Cellule : T_Vecteur_Creux;
@@ -335,7 +317,7 @@ package body Matrice is
         if Cellule = null then
           return Zero;
         else
-          return Cellule.all.Valeur;
+          return Cellule.all.Valeur / Mat.Poids (Ligne);
         end if;
       end;
     end if;
@@ -591,7 +573,9 @@ package body Matrice is
              Zero; -- On utilise une variable pour éviter de faire des Get, Set inutiles
             while Curseur /= null loop
               Produit :=
-               Produit + Get (A, I, Curseur.all.Ligne) * Curseur.all.Valeur;
+               Produit +
+               Get (A, I, Curseur.all.Ligne) * (Curseur.all.Valeur /
+                B.Poids (Curseur.all.Ligne));
               Curseur := Curseur.all.Suivante;
             end loop;
 

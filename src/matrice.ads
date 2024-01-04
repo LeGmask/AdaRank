@@ -124,7 +124,14 @@ private
   type T_Matrice_Creuse is array (Positive range <>) of T_Vecteur_Creux;
   -- Matrice creuse pour les opérations
 
-  type T_Matrice (Lignes, Colonnes : Positive; Pleine : Boolean) is record
+  type T_Poids is array (Positive range <>) of T_Valeur;
+
+  type T_Matrice
+   (Lignes, Colonnes : Positive; Pleine : Boolean)
+  is
+  record
+    Poids : T_Poids (1 .. Lignes) := (others => Un);
+
     case Pleine is
       when True =>
         Matrice_Pleine : T_Matrice_Pleine (1 .. Lignes, 1 .. Colonnes);
