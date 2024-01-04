@@ -29,7 +29,7 @@ package Matrice is
   -- @param Mat : la matrice à initialiser
   -- @param Val : la valeur par défaut
 
-  procedure Init_Fichier (File : in File_Type; Mat : out T_Matrice);
+  procedure Init_Fichier (File : in File_Type; Mat, Sortants : out T_Matrice);
   -- Crée une matrice à partir d'un fichier
   -- @param File : Fichier contenant la description du graphe
   -- @param Mat : Matrice d'adjacence à créer
