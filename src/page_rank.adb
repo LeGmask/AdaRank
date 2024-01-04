@@ -42,11 +42,13 @@ procedure Page_Rank is
 
       function Norme (A : in T_Matrice) return Float is
          Max_Abs : Float := abs (Get (A, 1, 1));
+         Element : Float;
       begin
          for I in 1 .. A.Lignes loop
             for J in 1 .. A.Colonnes loop
-               if abs (Get (A, I, J)) > Max_Abs then
-                  Max_Abs := abs (Get (A, I, J));
+               Element := abs (Get (A, I, J));
+               if Element > Max_Abs then
+                  Max_Abs := Element;
                end if;
             end loop;
          end loop;

@@ -11,19 +11,20 @@ package body Trifusion is
          procedure Fusion
            (Vecteur : in out T_Matrice; Deb, Milieu, Fin : in Integer)
          is
-            I, J               : Integer;
+            I, J               : Integer := 0;
             Vecteur_trie       : T_Matrice               := Copie (Vecteur);
             Ordre_trie         : Matrice_Ordre.T_Matrice :=
               Matrice_Ordre.Copie (Ordre);
             Vecteur_A_Detruire : T_Matrice               := Vecteur;
             Ordre_A_Detruire   : Matrice_Ordre.T_Matrice := Ordre;
+            Temp1, Temp2 : T_Valeur;
          begin
-            I := 0;
-            J := 0;
             while (I + Deb < Milieu) and then (J + Milieu <= Fin) loop
-               if Get (Vecteur, 1, J + Milieu) < Get (Vecteur, 1, I + Deb) then
+               Temp1 := Get (Vecteur, 1, I + Deb);
+               Temp2 := Get (Vecteur, 1, J + Milieu);
+               if Temp2 < Temp1 then
                   Set
-                    (Vecteur_trie, 1, Deb + I + J, Get (Vecteur, 1, I + Deb));
+                    (Vecteur_trie, 1, Deb + I + J, Temp1);
                   Matrice_Ordre.Set
                     (Ordre_trie, 1, Deb + I + J,
                      Matrice_Ordre.Get (Ordre, 1, I + Deb));
@@ -31,7 +32,7 @@ package body Trifusion is
                else
                   Set
                     (Vecteur_trie, 1, Deb + I + J,
-                     Get (Vecteur, 1, J + Milieu));
+                     Temp2);
                   Matrice_Ordre.Set
                     (Ordre_trie, 1, Deb + I + J,
                      Matrice_Ordre.Get (Ordre, 1, J + Milieu));
