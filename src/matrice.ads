@@ -57,7 +57,7 @@ package Matrice is
   -- @param B : la seconde matrice
 
   function "*" (A, B : in T_Matrice) return T_Matrice with
-   Pre  => A.Colonnes = B.Lignes and A.Pleine = B.Pleine,
+   Pre  => A.Colonnes = B.Lignes,
    Post => "*"'Result.Lignes = A.Lignes and "*"'Result.Colonnes = B.Colonnes;
   -- Renvoie le produit de deux matrices
   -- @param A : la première matrice

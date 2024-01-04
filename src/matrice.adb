@@ -323,7 +323,8 @@ package body Matrice is
   end "+";
 
   function "*" (A, B : in T_Matrice) return T_Matrice is
-    Mat : T_Matrice (A.Lignes, B.Colonnes, A.Pleine);
+    Pleine : constant Boolean := A.Pleine or B.Pleine;
+    Mat    : T_Matrice (A.Lignes, B.Colonnes, Pleine);
 
     procedure Multiplication_Pleine is
     begin
@@ -391,9 +392,55 @@ package body Matrice is
       end loop;
       Detruire (A_Transpose);
     end Multiplication_Creuse;
+
+    procedure Multiplication_Mixte is
+      Curseur     : T_Vecteur_Creux;
+      A_Transpose : T_Matrice (A.Colonnes, A.Lignes, A.Pleine);
+      Produit     : T_Valeur;
+    begin
+      Init (Mat, Zero);
+      if A.Pleine then
+        for I in 1 .. A.Lignes loop
+          for J in 1 .. B.Colonnes loop
+            Curseur := B.Matrice_Creuse (J);
+            Produit :=
+             Zero; -- On utilise une variable pour éviter de faire des Get, Set inutiles
+            while Curseur /= null loop
+              Produit :=
+               Produit + Get (A, I, Curseur.all.Ligne) * Curseur.all.Valeur;
+              Curseur := Curseur.all.Suivante;
+            end loop;
+
+            Set (Mat, I, J, Produit);
+          end loop;
+        end loop;
+      else
+        A_Transpose := Transpose (A);
+        for I in 1 .. A.Lignes loop
+          for J in 1 .. B.Colonnes loop
+            Curseur := A_Transpose.Matrice_Creuse (I);
+            Produit :=
+             Zero; -- On utilise une variable pour éviter de faire des Get, Set inutiles
+            while Curseur /= null loop
+              Produit :=
+               Produit + Get (B, Curseur.all.Ligne, J) * Curseur.all.Valeur;
+              Curseur := Curseur.all.Suivante;
+            end loop;
+
+            Set (Mat, I, J, Produit);
+          end loop;
+        end loop;
+
+        Detruire (A_Transpose);
+      end if;
+
+    end Multiplication_Mixte;
+
   begin
-    if Mat.Pleine then
+    if A.Pleine and B.Pleine then
       Multiplication_Pleine;
+    elsif (A.Pleine and not B.Pleine) or (B.Pleine and not A.Pleine) then
+      Multiplication_Mixte;
     else
       Multiplication_Creuse;
     end if;
