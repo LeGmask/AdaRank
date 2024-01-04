@@ -115,9 +115,10 @@ private
   type T_Vecteur_Creux is access T_Cellule;
 
   type T_Cellule is record
-    Ligne    : Positive;
-    Valeur   : T_Valeur;
-    Suivante : T_Vecteur_Creux;
+    Ligne      : Positive;
+    Valeur     : T_Valeur;
+    Precedente : T_Vecteur_Creux;
+    Suivante   : T_Vecteur_Creux;
   end record;
 
   type T_Matrice_Creuse is array (Positive range <>) of T_Vecteur_Creux;

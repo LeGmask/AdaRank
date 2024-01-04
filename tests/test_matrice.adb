@@ -51,22 +51,13 @@ procedure Test_Matrice is
     begin
       T_Matrice_Float.Init_Fichier (File, Mat, Sortants);
 
-      --  pragma Assert
-      --   (Get (G, 1, 1) = 0.0 and Get (G, 1, 2) = 1.0 and Get (G, 1, 3) = 1.0 and
-      --    Get (Sortants, 1, 1) = 2.0 and Get (G, 2, 1) = 0.0 and
-      --    Get (G, 2, 2) = 0.0 and Get (G, 2, 3) = 1.0 and
-      --    Get (Sortants, 2, 1) = 1.0 and Get (G, 3, 1) = 0.0 and
-      --    Get (G, 3, 2) = 1.0 and Get (G, 3, 3) = 0.0 and
-      --    Get (Sortants, 3, 1) = 1.0);
-
-      --  Ponderer_Graphe (G, Sortants);
       if Pleine then
         pragma Assert
          (T_Matrice_Float.Get (Sortants, 1, 1) = 2.0 and
           T_Matrice_Float.Get (Sortants, 2, 1) = 1.0 and
-          T_Matrice_Float.Get (Sortants, 3, 1) = 2.0);
+          T_Matrice_Float.Get (Sortants, 3, 1) = 3.0);
       end if;
-
+      
       pragma Assert
        (T_Matrice_Float.Get (Mat, 1, 1) = 0.0 and
         T_Matrice_Float.Get (Mat, 1, 2) = 0.5 and
@@ -74,9 +65,9 @@ procedure Test_Matrice is
         T_Matrice_Float.Get (Mat, 2, 1) = 0.0 and
         T_Matrice_Float.Get (Mat, 2, 2) = 0.0 and
         T_Matrice_Float.Get (Mat, 2, 3) = 1.0 and
-        T_Matrice_Float.Get (Mat, 3, 1) = 0.5 and
-        T_Matrice_Float.Get (Mat, 3, 2) = 0.5 and
-        T_Matrice_Float.Get (Mat, 3, 3) = 0.0);
+        T_Matrice_Float.Get (Mat, 3, 1) = 1.0/3.0 and
+        T_Matrice_Float.Get (Mat, 3, 2) = 1.0/3.0 and
+        T_Matrice_Float.Get (Mat, 3, 3) = 1.0/3.0);
 
       T_Matrice_Float.Detruire (Mat);
     end;
