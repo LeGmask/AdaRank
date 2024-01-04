@@ -58,9 +58,9 @@ procedure Page_Rank is
       S           : T_Matrice (N, N, Plein);
       G           : T_Matrice (N, N, Plein);
       Attila      : T_Matrice (N, N, Plein);
-      Pi_avant    : T_Matrice (1, N, Plein);
-      Pi_detruire : T_Matrice (1, N, Plein);
-      Pi_norm     : T_Matrice (1, N, Plein);
+      Pi_avant    : T_Matrice (1, N, True);
+      Pi_detruire : T_Matrice (1, N, True);
+      Pi_norm     : T_Matrice (1, N, True);
 
       --  Ordre    : Matrice_Integer.T_Matrice (1, N, True);
 
@@ -197,9 +197,9 @@ begin
 
    declare
       H        : T_Matrice (N, N, Plein);
-      Sortants : T_Matrice (N, 1, Plein);
-      Pi       : T_Matrice (1, N, Plein);
-      Ordre    : Matrice_Integer.T_Matrice (1, N, Plein);
+      Sortants : T_Matrice (N, 1, True);
+      Pi       : T_Matrice (1, N, True);
+      Ordre    : Matrice_Integer.T_Matrice (1, N, True);
    begin
       Lire_Graphe (File, H, Sortants);
       Close (File);
