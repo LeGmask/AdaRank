@@ -46,10 +46,15 @@ procedure Test_Matrice is
     Get (File, N);
 
     declare
-      Mat      : T_Matrice_Float.T_Matrice (N, N, Pleine);
-      Sortants : T_Matrice_Float.T_Matrice (N, 1, True);
+      Mat : T_Matrice_Float.T_Matrice (N, N, Pleine);
     begin
-      T_Matrice_Float.Init_Fichier (File, Mat, Sortants);
+      T_Matrice_Float.Init_Fichier (File, Mat);
+
+      pragma Assert
+       (T_Matrice_Float.Get_Poids (Mat, 1) = 2.0 and
+        T_Matrice_Float.Get_Poids (Mat, 2) = 1.0 and
+        T_Matrice_Float.Get_Poids (Mat, 3) = 3.0
+       );
 
       pragma Assert
        (T_Matrice_Float.Get (Mat, 1, 1) = 0.0 and
@@ -58,9 +63,9 @@ procedure Test_Matrice is
         T_Matrice_Float.Get (Mat, 2, 1) = 0.0 and
         T_Matrice_Float.Get (Mat, 2, 2) = 0.0 and
         T_Matrice_Float.Get (Mat, 2, 3) = 1.0 and
-        T_Matrice_Float.Get (Mat, 3, 1) = 1.0/3.0 and
-        T_Matrice_Float.Get (Mat, 3, 2) = 1.0/3.0 and
-        T_Matrice_Float.Get (Mat, 3, 3) = 1.0/3.0);
+        T_Matrice_Float.Get (Mat, 3, 1) = 1.0 / 3.0 and
+        T_Matrice_Float.Get (Mat, 3, 2) = 1.0 / 3.0 and
+        T_Matrice_Float.Get (Mat, 3, 3) = 1.0 / 3.0);
 
       T_Matrice_Float.Detruire (Mat);
     end;

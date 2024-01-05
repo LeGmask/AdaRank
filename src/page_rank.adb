@@ -33,7 +33,7 @@ procedure Page_Rank is
 
    procedure Algorithme
      (Alpha : in     Float; K : in Integer; Eps : in Float; N : in Integer;
-      Plein : in Boolean; H, Sortants : in out T_Matrice; Pi : out T_Matrice;
+      Plein : in     Boolean; H : in out T_Matrice; Pi : out T_Matrice;
       Ordre :    out Matrice_Integer.T_Matrice)
    is
 
@@ -67,11 +67,12 @@ procedure Page_Rank is
       -- Appliquer l'algorithme PageRank jusqu'à terminaison
       if Plein then
          --! Créer la matrice S
-         S := H;
+         S := Copie (H);
          for I in 1 .. N loop
-            if Get (Sortants, I, 1) = 0.0 then
+            if Get_Poids (S, I) = 0.0 then
                for J in 1 .. N loop
-                  Set (S, I, J, 1.0 / Float (N));
+                  Set (S, I, J, 1.0);
+                  Set_Poids (S, I, Float (N));
                end loop;
             end if;
          end loop;
@@ -121,7 +122,6 @@ procedure Page_Rank is
       Detruire (Pi_avant);
       Detruire (Attila);
       Detruire (H);
-      Detruire (Sortants);
    end Algorithme;
 
    ALPHA_INVALIDE : exception;
@@ -195,14 +195,13 @@ begin
    Get (File, N);
 
    declare
-      H        : T_Matrice (N, N, Plein);
-      Sortants : T_Matrice (N, 1, True);
-      Pi       : T_Matrice (1, N, True);
-      Ordre    : Matrice_Integer.T_Matrice (1, N, True);
+      H     : T_Matrice (N, N, Plein);
+      Pi    : T_Matrice (1, N, True);
+      Ordre : Matrice_Integer.T_Matrice (1, N, True);
    begin
-      Init_Fichier (File, H, Sortants);
+      Init_Fichier (File, H);
       Close (File);
-      Algorithme (Alpha, K, Eps, N, Plein, H, Sortants, Pi, Ordre);
+      Algorithme (Alpha, K, Eps, N, Plein, H, Pi, Ordre);
       Sauver (Pi, Ordre, N, K, Alpha, To_String (Prefixe));
       Detruire (Pi);
       Matrice_Integer.Detruire (Ordre);

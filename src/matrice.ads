@@ -29,7 +29,7 @@ package Matrice is
   -- @param Mat : la matrice à initialiser
   -- @param Val : la valeur par défaut
 
-  procedure Init_Fichier (File : in File_Type; Mat, Sortants : out T_Matrice);
+  procedure Init_Fichier (File : in File_Type; Mat : out T_Matrice);
   -- Crée une matrice à partir d'un fichier
   -- @param File : Fichier contenant la description du graphe
   -- @param Mat : Matrice d'adjacence à créer
@@ -49,6 +49,16 @@ package Matrice is
   -- @param Matrice : la matrice
   -- @param Ligne : la ligne
   -- @param Colonne : la colonne
+
+  function Get_Poids (Mat : in T_Matrice; Ligne : Positive) return T_Valeur;
+  -- Renvoie le poids d'une ligne
+  -- @param Mat : la matrice
+  -- @param Ligne : la ligne
+
+  procedure Set_Poids (Mat : in out T_Matrice; Ligne : Positive; Val : in T_Valeur);
+  -- Modifie le poids d'une ligne
+  -- @param Mat : la matrice
+  -- @param Ligne : la ligne
 
   procedure Set
    (Mat : in out T_Matrice; Ligne, Colonne : Positive; Val : in T_Valeur);
@@ -119,6 +129,7 @@ private
     Valeur     : T_Valeur;
     Precedente : T_Vecteur_Creux;
     Suivante   : T_Vecteur_Creux;
+    Ponderer   : Boolean := True;
   end record;
 
   type T_Matrice_Creuse is array (Positive range <>) of T_Vecteur_Creux;
@@ -126,11 +137,9 @@ private
 
   type T_Poids is array (Positive range <>) of T_Valeur;
 
-  type T_Matrice
-   (Lignes, Colonnes : Positive; Pleine : Boolean)
-  is
-  record
-    Poids : T_Poids (1 .. Lignes) := (others => Un);
+  type T_Matrice (Lignes, Colonnes : Positive; Pleine : Boolean) is record
+    Ponderer : Boolean               := False;
+    Poids    : T_Poids (1 .. Lignes) := (others => Un);
 
     case Pleine is
       when True =>
