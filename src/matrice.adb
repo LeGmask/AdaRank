@@ -109,7 +109,7 @@ package body Matrice is
 
           Get (File, I);
 
-          if I+1 /= Sommet_Courant then
+          if I + 1 /= Sommet_Courant then
             Sommet_Courant := I + 1;
           end if;
           Mat.Poids (Sommet_Courant) := Mat.Poids (Sommet_Courant) + Un;
@@ -410,10 +410,7 @@ package body Matrice is
     begin
       for I in 1 .. A.Lignes loop
         for J in 1 .. A.Colonnes loop
-          Set
-           (Mat, I, J,
-            Get (A, I, J) / Get_Poids (A, I) +
-            Get (B, I, J) / Get_Poids (B, I));
+          Set (Mat, I, J, Get (A, I, J) + Get (B, I, J));
         end loop;
       end loop;
     end Addition_Pleine;
@@ -513,16 +510,9 @@ package body Matrice is
     begin
       for I in 1 .. Mat.Lignes loop
         for J in 1 .. Mat.Colonnes loop
-          Set
-           (Mat, I, J,
-            (Get (A, I, 1) / Get_Poids (A, I)) *
-            (Get (B, 1, J) / Get_Poids (B, 1)));
+          Set (Mat, I, J, Get (A, I, 1) * Get (B, 1, J));
           for K in 2 .. A.Colonnes loop
-            Set
-             (Mat, I, J,
-              Get (Mat, I, J) +
-              (Get (A, I, K) / Get_Poids (A, I)) *
-               (Get (B, K, J) / Get_Poids (B, K)));
+            Set (Mat, I, J, Get (Mat, I, J) + Get (A, I, K) * Get (B, K, J));
           end loop;
         end loop;
       end loop;
@@ -679,7 +669,7 @@ package body Matrice is
     begin
       for I in 1 .. A.Lignes loop
         for J in 1 .. A.Colonnes loop
-          Set (Mat, I, J, Get (A, I, J) / Get_Poids (A, I) * B);
+          Set (Mat, I, J, Get (A, I, J) * B);
         end loop;
       end loop;
     end Multiplication_Plein;
