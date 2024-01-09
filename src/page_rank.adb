@@ -54,34 +54,34 @@ procedure Page_Rank is
 
       I : Integer;
 
-      S           : T_Matrice (N, N, Plein);
       G           : T_Matrice (N, N, Plein);
-      Attila      : T_Matrice (N, N, Plein);
       Pi_avant    : T_Matrice (1, N, True);
-      Pi_detruire : T_Matrice (1, N, True);
       Pi_norm     : T_Matrice (1, N, True);
-
-      --  Ordre    : Matrice_Integer.T_Matrice (1, N, True);
 
    begin
       -- Appliquer l'algorithme PageRank jusqu'à terminaison
       if Plein then
-         --! Créer la matrice S
-         S := Copie (H);
-         for I in 1 .. N loop
-            if Get_Poids (S, I) = 0.0 then
-               for J in 1 .. N loop
-                  Set (S, I, J, 1.0);
-                  Set_Poids (S, I, Float (N));
-               end loop;
-            end if;
-         end loop;
+         declare
+            Attila : T_Matrice (N, N, True);
+            S      : T_Matrice (N, N, True);
+         begin
+            --! Créer la matrice S
+            S := Copie (H);
+            for I in 1 .. N loop
+               if Get_Poids (S, I) = 0.0 then
+                  for J in 1 .. N loop
+                     Set (S, I, J, 1.0);
+                     Set_Poids (S, I, Float (N));
+                  end loop;
+               end if;
+            end loop;
 
-         --! Créer la matrice G
-         Init (Attila, 1.0);
-         G := Alpha * S + ((1.0 - Alpha) / Float (N)) * Attila;
+            --! Créer la matrice G
+            Init (Attila, 1.0);
+            G := Alpha * S + ((1.0 - Alpha) / Float (N)) * Attila;
+         end;
       else
-         G := Copie (H);
+         G := H;
       end if;
 
       --! Calculer la matrice Pi par itérations
@@ -90,38 +90,25 @@ procedure Page_Rank is
       Pi := Pi_avant * G;
 
       -- Calcul du Pi utilisé pour la norme
-      Pi_detruire := Pi_avant * (-1.0);
-      Pi_norm     := Pi + Pi_detruire;
-      Detruire (Pi_detruire);
+      Pi_norm     := Pi + Pi_avant * (-1.0);
 
       while (I < K) and then Norme (Pi_norm) > Eps loop
-         Detruire (Pi_avant);
          Pi_avant := Copie (Pi);
 
-         Pi_detruire := Pi;
          Pi          := Pi * G;
-         Detruire (Pi_detruire);
 
          -- Calcul du Pi utilisé pour la norme
-         Detruire (Pi_norm); -- On détruit l'ancien Pi_norm
-         Pi_detruire := Pi_avant * (-1.0);
-         Pi_norm     := Pi + Pi_detruire;
-         Detruire (Pi_detruire);
+         Pi_norm     := Pi + Pi_avant * (-1.0);
 
          I := I + 1;
       end loop;
-      Detruire (Pi_norm);
 
       for I in 1 .. N loop
          Matrice_Integer.Set (Ordre, 1, I, I - 1);
       end loop;
       Tri_Fusion.Tri (Pi, Ordre);
 
-      Detruire (S);
       Detruire (G);
-      Detruire (Pi_avant);
-      Detruire (Attila);
-      Detruire (H);
    end Algorithme;
 
    ALPHA_INVALIDE : exception;
