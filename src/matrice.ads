@@ -11,6 +11,11 @@ generic
   -- Renvoie l'addition de deux T_Valeurs
   -- @param Gauche : la T_Valeur de gauche
   -- @param Droite : la T_Valeur de droite
+  with function "-"
+   (Gauche : in T_Valeur; Droite : in T_Valeur) return T_Valeur;
+  -- Renvoie la soustraction de deux T_Valeurs
+  -- @param Gauche : la T_Valeur de gauche
+  -- @param Droite : la T_Valeur de droite
   with function "*"
    (Gauche : in T_Valeur; Droite : in T_Valeur) return T_Valeur;
   -- Renvoie le produit de deux T_Valeurs
@@ -94,6 +99,13 @@ package Matrice is
   -- Renvoie le produit d'une matrice par un scalaire à gauche
   -- @param A : le scalaire
   -- @param B : la matrice
+
+  procedure PageRankIter
+   (Pi : in out T_Matrice; G : in T_Matrice; Alpha, N : in T_Valeur);
+  -- Applique une itération de PageRank dans le cas d'une matrice creuse
+  -- @param Pi : le vecteur de probabilité
+  -- @param G : la matrice d'adjacence
+  -- @param Alpha : le coefficient d'amortissement
 
   generic
     with procedure Traiter

@@ -7,16 +7,16 @@ with Trifusion;
 with Export;
 
 procedure Page_Rank is
-   PRECISION : constant := 6;
+   PRECISION : constant := 14;
    type T_Double is digits PRECISION;
 
    package Double_IO is new Ada.Text_IO.Float_IO (T_Double);
    use Double_IO;
 
-   package Matrice_Float is new Matrice (T_Double, 0.0, 1.0, "+", "*", "/");
+   package Matrice_Float is new Matrice
+     (T_Double, 0.0, 1.0, "+", "-", "*", "/");
    use Matrice_Float;
-   package Matrice_Integer is new Matrice
-     (Integer, 0, 1, Standard."+", Standard."*", Standard."/");
+   package Matrice_Integer is new Matrice (Integer, 0, 1, "+", "-", "*", "/");
 
    package Tri_Fusion is new Trifusion (Matrice_Float, Matrice_Integer, "<");
 
@@ -92,8 +92,10 @@ procedure Page_Rank is
 
       --! Calculer la matrice Pi par itérations
       I := 0;
-      Init (Pi_avant, T_Double (1.0 / Float (N)));
-      Pi := Pi_avant * G;
+
+      Init (Pi, T_Double (1.0 / Float (N)));
+      Pi_avant := Copie (Pi);
+      PageRankIter (Pi, G, T_Double (Alpha), T_Double (N));
 
       -- Calcul du Pi utilisé pour la norme
       Pi_norm := Pi + Pi_avant * (-1.0);
@@ -101,7 +103,7 @@ procedure Page_Rank is
       while (I < K) and then Norme (Pi_norm) > T_Double (Eps) loop
          Pi_avant := Copie (Pi);
 
-         Pi := Pi * G;
+         PageRankIter (Pi, G, T_Double (Alpha), T_Double (N));
 
          -- Calcul du Pi utilisé pour la norme
          Pi_norm := Pi + Pi_avant * (-1.0);
@@ -112,6 +114,7 @@ procedure Page_Rank is
       for I in 1 .. N loop
          Matrice_Integer.Set (Ordre, 1, I, I - 1);
       end loop;
+
       Tri_Fusion.Tri (Pi, Ordre);
 
       Detruire (G);

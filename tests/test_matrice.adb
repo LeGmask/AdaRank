@@ -4,7 +4,7 @@ with Matrice;
 
 procedure Test_Matrice is
   package T_Matrice_Int is new Matrice
-   (T_Valeur => Integer, Zero => 0, Un => 1, "+" => Standard."+",
+   (T_Valeur => Integer, Zero => 0, Un => 1, "+" => Standard."+", "-" => Standard."-",
     "*"      => Standard."*", "/" => Standard."/");
   use T_Matrice_Int;
 
@@ -39,7 +39,7 @@ procedure Test_Matrice is
     N    : Integer;
 
     package T_Matrice_Float is new Matrice
-     (T_Valeur => Float, Zero => 0.0, Un => 1.0, "+" => Standard."+",
+     (T_Valeur => Float, Zero => 0.0, Un => 1.0, "+" => Standard."+", "-" => Standard."-",
       "*"      => Standard."*", "/" => Standard."/");
   begin
     Open (File, In_File, "networks/test.net");

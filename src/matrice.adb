@@ -728,6 +728,66 @@ package body Matrice is
     return Mat;
   end "*";
 
+  function Somme (Mat : T_Matrice) return T_Valeur is
+    Total : T_Valeur := Zero;
+  begin
+    if Mat.Pleine then
+      for I in 1 .. Mat.Lignes loop
+        for J in 1 .. Mat.Colonnes loop
+          Total := Total + Get (Mat, I, J);
+        end loop;
+      end loop;
+    else
+      declare
+        Curseur : T_Vecteur_Creux;
+      begin
+        for I in 1 .. Mat.Colonnes loop
+          Curseur := Mat.Matrice_Creuse (I);
+          while Curseur /= null loop
+            Ponderation (Mat, Curseur);
+            Total   := Total + Curseur.all.Valeur;
+            Curseur := Curseur.all.Suivante;
+          end loop;
+        end loop;
+      end;
+    end if;
+    return Total;
+  end Somme;
+
+  procedure PageRankIter
+   (Pi : in out T_Matrice; G : in T_Matrice; Alpha, N : in T_Valeur)
+  is
+    NewPi   : T_Matrice (Pi.Lignes, Pi.Colonnes, Pi.Pleine);
+    Curseur : T_Vecteur_Creux;
+    Produit : T_Valeur;
+    Alpha_N : constant T_Valeur := Alpha / N;
+    Default_Pi   : constant T_Valeur := Somme (Pi) * ((Un - Alpha) / N);
+  begin
+    if G.Pleine then
+      Pi := Pi * G;
+    else
+      for J in 1 .. G.Colonnes loop
+        Curseur := G.Matrice_Creuse (J);
+        Produit :=
+         Zero; -- On utilise une variable pour éviter de faire des Get, Set inutiles
+        for k in 1 .. G.Lignes loop
+
+          if Curseur /= null and then Curseur.all.Ligne = k
+          then -- curseur existe
+            Ponderation (G, Curseur);
+            Produit := Produit + Get (Pi, 1, k) * (Alpha * Curseur.all.Valeur);
+            Curseur := Curseur.all.Suivante;
+
+          elsif Get_Poids (G, k) = Zero then
+            Produit := Produit + (Get (Pi, 1, k) * Alpha_N);
+          end if;
+        end loop;
+        Set (NewPi, 1, J, Default_Pi + Produit);
+      end loop;
+      Pi := NewPi;
+    end if;
+  end PageRankIter;
+
   procedure Pour_Chaque (Mat : in T_Matrice) is
     procedure Pour_Chaque_Pleine is
       Matrice_Pleine : T_Matrice_Pleine := Mat.Matrice_Pleine;
