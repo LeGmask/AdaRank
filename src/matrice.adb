@@ -96,7 +96,7 @@ package body Matrice is
     I, J : Integer;
 
     procedure Init_Fichier_Plein is
-      Sommet_Courant : Integer := -1;
+      Sommet_Courant : Integer := 0;
     begin
       Init (Mat);
       Mat.Poids := (others => Zero);
@@ -792,7 +792,7 @@ package body Matrice is
       end loop;
 
       for I in 1 .. A.Lignes loop
-        for J in Curseurs'Range loop
+        for J in 1 .. A.Colonnes loop
           if Curseurs (J) /= null and then Curseurs (J).all.Ligne = I then
             Ponderation (A, Curseurs (J));
 
