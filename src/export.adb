@@ -1,5 +1,4 @@
 package body Export is
-
     procedure Export_Resultats
        (Pi   : in T_Matrice; Ordre : in Matrice_Ordre.T_Matrice;
         N, K : in Integer; Alpha : in Float; Prefix : in String)
@@ -28,5 +27,4 @@ package body Export is
 
         Close (Fichier_Ordre);
     end Export_Resultats;
-
 end Export;

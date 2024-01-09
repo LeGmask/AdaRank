@@ -658,13 +658,6 @@ package body Matrice is
   function "*" (A : in T_Matrice; B : in T_Valeur) return T_Matrice is
     Mat : T_Matrice (A.Lignes, A.Colonnes, A.Pleine);
 
-    --  procedure Traiter (Ligne, Colonne : in Positive; Val : in out T_Valeur) is begin
-    --    Val := Val * B;
-    --  end Traiter;
-
-    --  procedure Multiplication is new Pour_Chaque (Traiter);
-    -- Idéal car 1 seul parcours mais pose problème si on veut supprimer quand valeur = Zero
-
     procedure Multiplication_Plein is
     begin
       for I in 1 .. A.Lignes loop

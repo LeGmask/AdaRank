@@ -55,7 +55,8 @@ package Matrice is
   -- @param Mat : la matrice
   -- @param Ligne : la ligne
 
-  procedure Set_Poids (Mat : in out T_Matrice; Ligne : Positive; Val : in T_Valeur);
+  procedure Set_Poids
+   (Mat : in out T_Matrice; Ligne : Positive; Val : in T_Valeur);
   -- Modifie le poids d'une ligne
   -- @param Mat : la matrice
   -- @param Ligne : la ligne

@@ -1,5 +1,4 @@
 with Ada.Text_IO;           use Ada.Text_IO;
-with Ada.Float_Text_IO;     use Ada.Float_Text_IO;
 with Ada.Integer_Text_IO;   use Ada.Integer_Text_IO;
 with Ada.Command_Line;      use Ada.Command_Line;
 with Ada.Strings.Unbounded; use Ada.Strings.Unbounded;
@@ -8,8 +7,13 @@ with Trifusion;
 with Export;
 
 procedure Page_Rank is
-   package Matrice_Float is new Matrice
-     (Float, 0.0, 1.0, Standard."+", Standard."*", Standard."/");
+   PRECISION : constant := 6;
+   type T_Double is digits PRECISION;
+
+   package Double_IO is new Ada.Text_IO.Float_IO (T_Double);
+   use Double_IO;
+
+   package Matrice_Float is new Matrice (T_Double, 0.0, 1.0, "+", "*", "/");
    use Matrice_Float;
    package Matrice_Integer is new Matrice
      (Integer, 0, 1, Standard."+", Standard."*", Standard."/");
@@ -20,9 +24,9 @@ procedure Page_Rank is
      (Matrice_Pi => Matrice_Float, Matrice_Ordre => Matrice_Integer);
    use Export_PageRank;
 
-   procedure Put_Element (Fichier : File_Type; E : Float) is
+   procedure Put_Element (Fichier : File_Type; E : T_Double) is
    begin
-      Put (Fichier, E, 1);
+      Put (File => Fichier, Item => E, Fore => 0, Exp => 0);
    end Put_Element;
    procedure Put_Element (Fichier : File_Type; E : Integer) is
    begin
@@ -33,13 +37,13 @@ procedure Page_Rank is
 
    procedure Algorithme
      (Alpha : in     Float; K : in Integer; Eps : in Float; N : in Integer;
-      Plein : in     Boolean; H : in out T_Matrice; Pi : out T_Matrice;
+      Plein : in     Boolean; H : in T_Matrice; Pi : out T_Matrice;
       Ordre :    out Matrice_Integer.T_Matrice)
    is
 
-      function Norme (A : in T_Matrice) return Float is
-         Max_Abs : Float := abs (Get (A, 1, 1));
-         Element : Float;
+      function Norme (A : in T_Matrice) return T_Double is
+         Max_Abs : T_Double := abs (Get (A, 1, 1));
+         Element : T_Double;
       begin
          for I in 1 .. A.Lignes loop
             for J in 1 .. A.Colonnes loop
@@ -54,9 +58,9 @@ procedure Page_Rank is
 
       I : Integer;
 
-      G           : T_Matrice (N, N, Plein);
-      Pi_avant    : T_Matrice (1, N, True);
-      Pi_norm     : T_Matrice (1, N, True);
+      G        : T_Matrice (N, N, Plein);
+      Pi_avant : T_Matrice (1, N, True);
+      Pi_norm  : T_Matrice (1, N, True);
 
    begin
       -- Appliquer l'algorithme PageRank jusqu'à terminaison
@@ -71,14 +75,16 @@ procedure Page_Rank is
                if Get_Poids (S, I) = 0.0 then
                   for J in 1 .. N loop
                      Set (S, I, J, 1.0);
-                     Set_Poids (S, I, Float (N));
+                     Set_Poids (S, I, T_Double (N));
                   end loop;
                end if;
             end loop;
 
             --! Créer la matrice G
             Init (Attila, 1.0);
-            G := Alpha * S + ((1.0 - Alpha) / Float (N)) * Attila;
+            G :=
+              T_Double (Alpha) * S +
+              T_Double ((1.0 - Alpha) / Float (N)) * Attila;
          end;
       else
          G := H;
@@ -86,19 +92,19 @@ procedure Page_Rank is
 
       --! Calculer la matrice Pi par itérations
       I := 0;
-      Init (Pi_avant, 1.0 / Float (N));
+      Init (Pi_avant, T_Double (1.0 / Float (N)));
       Pi := Pi_avant * G;
 
       -- Calcul du Pi utilisé pour la norme
-      Pi_norm     := Pi + Pi_avant * (-1.0);
+      Pi_norm := Pi + Pi_avant * (-1.0);
 
-      while (I < K) and then Norme (Pi_norm) > Eps loop
+      while (I < K) and then Norme (Pi_norm) > T_Double (Eps) loop
          Pi_avant := Copie (Pi);
 
-         Pi          := Pi * G;
+         Pi := Pi * G;
 
          -- Calcul du Pi utilisé pour la norme
-         Pi_norm     := Pi + Pi_avant * (-1.0);
+         Pi_norm := Pi + Pi_avant * (-1.0);
 
          I := I + 1;
       end loop;
