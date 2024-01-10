@@ -63,7 +63,7 @@ jobs:
     - name: Create commit comment
       uses: peter-evans/commit-comment@v3
       with: 
-        body-path: benchmark.txt
+        body-path: benchmark.md
       
   test:
 
