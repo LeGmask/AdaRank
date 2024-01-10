@@ -15,12 +15,6 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
 
-    - name: Set up GNAT toolchain
-      run: >
-        sudo apt-get update &&
-        sudo apt-get install gnat gprbuild &&
-        sudo apt-get install make
-
     - name: Build
       run: make
     - name:  Publish artifact
@@ -72,12 +66,6 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v3
-
-    - name: Set up GNAT toolchain
-      run: >
-        sudo apt-get update &&
-        sudo apt-get install gnat gprbuild &&
-        sudo apt-get install make
 
     - name: Build
       run: make test
