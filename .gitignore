@@ -21,3 +21,6 @@ networks/*
 
 # profiler files
 gmon.out
+
+# benchmark file
+benchmark.md

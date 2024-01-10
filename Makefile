@@ -14,6 +14,7 @@ clean:
 	cd build/ && gnatclean ../src/*.adb && gnatclean ../tests/*.adb && rm -f *.png
 	rm -f *.prw *.pr
 	rm -f gmon.out
+	rm -f benchmark.md
 
 test:
 	mkdir -p build

@@ -757,11 +757,11 @@ package body Matrice is
   procedure PageRankIter
    (Pi : in out T_Matrice; G : in T_Matrice; Alpha, N : in T_Valeur)
   is
-    NewPi   : T_Matrice (Pi.Lignes, Pi.Colonnes, Pi.Pleine);
-    Curseur : T_Vecteur_Creux;
-    Produit : T_Valeur;
-    Alpha_N : constant T_Valeur := Alpha / N;
-    Default_Pi   : constant T_Valeur := Somme (Pi) * ((Un - Alpha) / N);
+    NewPi      : T_Matrice (Pi.Lignes, Pi.Colonnes, Pi.Pleine);
+    Curseur    : T_Vecteur_Creux;
+    Produit    : T_Valeur;
+    Alpha_N    : constant T_Valeur := Alpha / N;
+    Default_Pi : constant T_Valeur := Somme (Pi) * ((Un - Alpha) / N);
   begin
     if G.Pleine then
       Pi := Pi * G;
