@@ -142,7 +142,6 @@ private
     Valeur     : T_Valeur;
     Precedente : T_Vecteur_Creux;
     Suivante   : T_Vecteur_Creux;
-    Ponderer   : Boolean := True;
   end record;
 
   type T_Matrice_Creuse is array (Positive range <>) of T_Vecteur_Creux;
@@ -151,7 +150,6 @@ private
   type T_Poids is array (Positive range <>) of T_Valeur;
 
   type T_Matrice (Lignes, Colonnes : Positive; Pleine : Boolean) is record
-    Ponderer : Boolean               := False;
     Poids    : T_Poids (1 .. Lignes) := (others => Un);
 
     case Pleine is

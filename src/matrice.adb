@@ -18,8 +18,7 @@ package body Matrice is
       Nouvelle_Cellule :=
        new T_Cellule'
         (Ligne    => Curseur.all.Ligne, Valeur => Curseur.all.Valeur,
-         Suivante => Curseur.all.Suivante, Precedente => Cellule_Prec,
-         Ponderer => Curseur.all.Ponderer);
+         Suivante => Curseur.all.Suivante, Precedente => Cellule_Prec);
 
       if Cellule_Prec = null then
         Copie := Nouvelle_Cellule;
@@ -33,18 +32,6 @@ package body Matrice is
 
     return Copie;
   end Copie_Vect_Creux;
-
-  procedure Ponderation (Mat : in T_Matrice; Curseur_Mat : in T_Vecteur_Creux)
-  is
-  begin
-    if Mat.Ponderer and then Curseur_Mat /= null
-     and then Curseur_Mat.all.Ponderer
-    then
-      Curseur_Mat.all.Ponderer := False;
-      Curseur_Mat.all.Valeur   :=
-       Curseur_Mat.all.Valeur / Mat.Poids (Curseur_Mat.all.Ligne);
-    end if;
-  end Ponderation;
 
   procedure Init (Mat : out T_Matrice; Val : in T_Valeur := Zero) is
 
@@ -62,15 +49,14 @@ package body Matrice is
       else
         Curseur_Cellule        :=
          new T_Cellule'
-          (Ligne    => 1, Valeur => Val, Suivante => null, Precedente => null,
-           Ponderer => True);
+          (Ligne    => 1, Valeur => Val, Suivante => null, Precedente => null);
         Mat.Matrice_Creuse (1) := Curseur_Cellule;
 
         while Index_Ligne < Mat.Lignes loop
           Nouvelle_Cellule :=
            new T_Cellule'
             (Ligne      => Index_Ligne + 1, Valeur => Val, Suivante => null,
-             Precedente => Curseur_Cellule, Ponderer => True);
+             Precedente => Curseur_Cellule);
 
           Curseur_Cellule.all.Suivante := Nouvelle_Cellule;
           Curseur_Cellule              := Nouvelle_Cellule;
@@ -135,7 +121,7 @@ package body Matrice is
           Curseurs (Colonne)           :=
            new T_Cellule'
             (Ligne      => Sommet_Courant, Valeur => Un, Suivante => null,
-             Precedente => null, Ponderer => True);
+             Precedente => null);
           Mat.Matrice_Creuse (Colonne) := Curseurs (Colonne);
 
         elsif Curseurs (Colonne).all.Ligne = Sommet_Courant then
@@ -152,7 +138,7 @@ package body Matrice is
            new T_Cellule'
             (Ligne      => Sommet_Courant, Valeur => Un,
              Suivante   => Curseurs (Colonne).all.Suivante,
-             Precedente => Curseurs (Colonne), Ponderer => True);
+             Precedente => Curseurs (Colonne));
           Curseurs (Colonne)              := Curseurs (Colonne).all.Suivante;
         elsif Curseurs (Colonne).all.Ligne > Sommet_Courant
          and then
@@ -164,8 +150,7 @@ package body Matrice is
            new T_Cellule'
             (Ligne      => Sommet_Courant, Valeur => Un,
              Suivante   => Curseurs (Colonne),
-             Precedente => Curseurs (Colonne).all.Precedente,
-             Ponderer   => True);
+             Precedente => Curseurs (Colonne).all.Precedente);
           Curseurs (Colonne) := Curseurs (Colonne).all.Precedente;
           if Curseurs (Colonne).all.Precedente = null then
             Mat.Matrice_Creuse (Colonne) := Curseurs (Colonne);
@@ -193,8 +178,6 @@ package body Matrice is
       end Maj_Curseurs;
 
     begin
-      -- Active le mode ponderation de la matrice
-      Mat.Ponderer := True;
       Mat.Poids    := (others => Zero);
 
       while not End_Of_File (File) loop
@@ -255,7 +238,6 @@ package body Matrice is
       Copier_Creuse;
     end if;
 
-    Copie.Ponderer := True;
     Copie.Poids    := Mat.Poids;
 
     return Copie;
@@ -303,7 +285,7 @@ package body Matrice is
   is
   begin
     if Mat.Pleine then
-      return Mat.Matrice_Pleine (Ligne, Colonne) / Mat.Poids (Ligne);
+      return Mat.Matrice_Pleine (Ligne, Colonne);
     else
       declare
         Cellule : T_Vecteur_Creux;
@@ -313,7 +295,6 @@ package body Matrice is
         if Cellule = null then
           return Zero;
         else
-          Ponderation (Mat, Cellule);
           return Cellule.all.Valeur;
         end if;
       end;
@@ -381,11 +362,9 @@ package body Matrice is
           Nouvelle_Cellule :=
            new T_Cellule'
             (Ligne      => Ligne, Valeur => Val, Suivante => Cellule_Suiv,
-             Precedente => Cellule_Prec, Ponderer => False);
+             Precedente => Cellule_Prec);
           if Cellule_Prec = null then
             Mat.Matrice_Creuse (Colonne) := Nouvelle_Cellule;
-            Mat.Ponderer                 :=
-             False; -- La matrice a été modifié, la ponderation n'est plus valable
           else
             Cellule_Prec.all.Suivante := Nouvelle_Cellule;
           end if;
@@ -425,35 +404,33 @@ package body Matrice is
       Curseur_B := Vect_B;
 
       while Curseur_A /= null or Curseur_B /= null loop
-        Ponderation (A, Curseur_A);
-        Ponderation (B, Curseur_B);
 
         if Curseur_A = null and Curseur_B /= null then
           Nouvelle_Cellule :=
            new T_Cellule'
             (Ligne    => Curseur_B.all.Ligne, Valeur => Curseur_B.all.Valeur,
-             Suivante => null, Precedente => Cellule_Prec, Ponderer => True);
+             Suivante => null, Precedente => Cellule_Prec);
 
           Curseur_B := Curseur_B.all.Suivante;
         elsif Curseur_A /= null and Curseur_B = null then
           Nouvelle_Cellule :=
            new T_Cellule'
             (Ligne    => Curseur_A.all.Ligne, Valeur => Curseur_A.all.Valeur,
-             Suivante => null, Precedente => Cellule_Prec, Ponderer => True);
+             Suivante => null, Precedente => Cellule_Prec);
 
           Curseur_A := Curseur_A.all.Suivante;
         elsif Curseur_A.all.Ligne < Curseur_B.all.Ligne then
           Nouvelle_Cellule :=
            new T_Cellule'
             (Ligne    => Curseur_A.all.Ligne, Valeur => Curseur_A.all.Valeur,
-             Suivante => null, Precedente => Cellule_Prec, Ponderer => True);
+             Suivante => null, Precedente => Cellule_Prec);
 
           Curseur_A := Curseur_A.all.Suivante;
         elsif Curseur_A.all.Ligne > Curseur_B.all.Ligne then
           Nouvelle_Cellule :=
            new T_Cellule'
             (Ligne    => Curseur_B.all.Ligne, Valeur => Curseur_B.all.Valeur,
-             Suivante => null, Precedente => Cellule_Prec, Ponderer => True);
+             Suivante => null, Precedente => Cellule_Prec);
 
           Curseur_B := Curseur_B.all.Suivante;
         else
@@ -464,7 +441,7 @@ package body Matrice is
              new T_Cellule'
               (Ligne    => Curseur_A.all.Ligne,
                Valeur   => Curseur_A.all.Valeur + Curseur_B.all.Valeur,
-               Suivante => null, Precedente => Cellule_Prec, Ponderer => True);
+               Suivante => null, Precedente => Cellule_Prec);
           end if;
 
           Curseur_A := Curseur_A.all.Suivante;
@@ -529,8 +506,6 @@ package body Matrice is
       Curseur_B := Mat_B.Matrice_Creuse (Vect_B);
 
       while Curseur_A /= null or Curseur_B /= null loop
-        Ponderation (Mat_A, Curseur_A);
-        Ponderation (Mat_B, Curseur_B);
 
         if Curseur_A = null and Curseur_B /= null then
           Curseur_B := null;
@@ -562,7 +537,7 @@ package body Matrice is
            new T_Cellule'
             (Ligne    => Index_A,
              Valeur   => Produit_Scalaire (A_Transpose, Index_A, B, Index_B),
-             Suivante => null, Precedente => Cellule_Prec, Ponderer => False);
+             Suivante => null, Precedente => Cellule_Prec);
           if Cellule_Prec = null then
             Mat.Matrice_Creuse (Index_B) := Nouvelle_Cellule;
           else
@@ -587,7 +562,6 @@ package body Matrice is
             Produit :=
              Zero; -- On utilise une variable pour éviter de faire des Get, Set inutiles
             while Curseur /= null loop
-              Ponderation (B, Curseur);
               Produit :=
                Produit + Get (A, I, Curseur.all.Ligne) * Curseur.all.Valeur;
               Curseur := Curseur.all.Suivante;
@@ -597,7 +571,7 @@ package body Matrice is
           end loop;
         end loop;
       else
-        A_Transpose := Transpose (A); -- pas de ponderation maybe broken
+        A_Transpose := Transpose (A);
         for I in 1 .. A.Lignes loop
           for J in 1 .. B.Colonnes loop
             Curseur := A_Transpose.Matrice_Creuse (I);
@@ -638,12 +612,10 @@ package body Matrice is
   begin
     Curseur := Mat.Matrice_Creuse (Vect);
     while Curseur /= null loop
-      Ponderation (Mat, Curseur);
       Nouvelle_Cellule :=
        new T_Cellule'
         (Ligne    => Curseur.all.Ligne, Valeur => Curseur.all.Valeur * B,
-         Suivante => Curseur.all.Suivante, Precedente => Cellule_Prec,
-         Ponderer => False);
+         Suivante => Curseur.all.Suivante, Precedente => Cellule_Prec);
       if Cellule_Prec = null then
         Copie := Nouvelle_Cellule;
       else
@@ -744,7 +716,6 @@ package body Matrice is
         for I in 1 .. Mat.Colonnes loop
           Curseur := Mat.Matrice_Creuse (I);
           while Curseur /= null loop
-            Ponderation (Mat, Curseur);
             Total   := Total + Curseur.all.Valeur;
             Curseur := Curseur.all.Suivante;
           end loop;
@@ -774,8 +745,7 @@ package body Matrice is
 
           if Curseur /= null and then Curseur.all.Ligne = k
           then -- curseur existe
-            Ponderation (G, Curseur);
-            Produit := Produit + Get (Pi, 1, k) * (Alpha * Curseur.all.Valeur);
+            Produit := Produit + Get (Pi, 1, k) * (Alpha / G.Poids (Curseur.all.Ligne));
             Curseur := Curseur.all.Suivante;
 
           elsif Get_Poids (G, k) = Zero then
@@ -847,20 +817,18 @@ package body Matrice is
       for I in 1 .. A.Lignes loop
         for J in 1 .. A.Colonnes loop
           if Curseurs (J) /= null and then Curseurs (J).all.Ligne = I then
-            Ponderation (A, Curseurs (J));
 
             if Curseur_Transpose = null then
               Curseur_Transpose      :=
                new T_Cellule'
                 (Ligne    => J, Valeur => Curseurs (J).all.Valeur,
-                 Suivante => null, Precedente => null, Ponderer => False);
+                 Suivante => null, Precedente => null);
               Mat.Matrice_Creuse (I) := Curseur_Transpose;
             else
               Curseur_Transpose.all.Suivante :=
                new T_Cellule'
                 (Ligne    => J, Valeur => Curseurs (J).all.Valeur,
-                 Suivante => null, Precedente => Curseur_Transpose,
-                 Ponderer => False);
+                 Suivante => null, Precedente => Curseur_Transpose);
               Curseur_Transpose              := Curseur_Transpose.all.Suivante;
             end if;
             Curseurs (J) := Curseurs (J).all.Suivante;

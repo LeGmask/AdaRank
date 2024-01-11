@@ -69,13 +69,17 @@ procedure Page_Rank is
             Attila : T_Matrice (N, N, True);
             S      : T_Matrice (N, N, True);
          begin
-            --! Créer la matrice S
+            --! Créer la matrice S en pondérant
             S := Copie (H);
             for I in 1 .. N loop
                if Get_Poids (S, I) = 0.0 then
                   for J in 1 .. N loop
-                     Set (S, I, J, 1.0);
+                     Set (S, I, J, T_Double (1.0/ Float (N)));
                      Set_Poids (S, I, T_Double (N));
+                  end loop;
+               else
+                  for J in 1 .. N loop
+                     Set (S, I, J, T_Double (Float (Get (S, I, J))/ Float (Get_Poids(S, I))));
                   end loop;
                end if;
             end loop;
