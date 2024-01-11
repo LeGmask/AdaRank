@@ -38,36 +38,33 @@ procedure Test_Matrice is
     File : File_Type;
     N    : Integer;
 
-    package T_Matrice_Float is new Matrice
-     (T_Valeur => Float, Zero => 0.0, Un => 1.0, "+" => Standard."+", "-" => Standard."-",
-      "*"      => Standard."*", "/" => Standard."/");
   begin
     Open (File, In_File, "networks/test.net");
     Get (File, N);
 
     declare
-      Mat : T_Matrice_Float.T_Matrice (N, N, Pleine);
+      Mat : T_Matrice (N, N, Pleine);
     begin
-      T_Matrice_Float.Init_Fichier (File, Mat);
+      Init_Fichier (File, Mat);
 
       pragma Assert
-       (T_Matrice_Float.Get_Poids (Mat, 1) = 2.0 and
-        T_Matrice_Float.Get_Poids (Mat, 2) = 1.0 and
-        T_Matrice_Float.Get_Poids (Mat, 3) = 3.0
+       (Get_Poids (Mat, 1) = 2 and
+        Get_Poids (Mat, 2) = 1 and
+        Get_Poids (Mat, 3) = 3
        );
 
       pragma Assert
-       (T_Matrice_Float.Get (Mat, 1, 1) = 0.0 and
-        T_Matrice_Float.Get (Mat, 1, 2) = 0.5 and
-        T_Matrice_Float.Get (Mat, 1, 3) = 0.5 and
-        T_Matrice_Float.Get (Mat, 2, 1) = 0.0 and
-        T_Matrice_Float.Get (Mat, 2, 2) = 0.0 and
-        T_Matrice_Float.Get (Mat, 2, 3) = 1.0 and
-        T_Matrice_Float.Get (Mat, 3, 1) = 1.0 / 3.0 and
-        T_Matrice_Float.Get (Mat, 3, 2) = 1.0 / 3.0 and
-        T_Matrice_Float.Get (Mat, 3, 3) = 1.0 / 3.0);
+       (Get (Mat, 1, 1) = 0 and
+        Get (Mat, 1, 2) = 1 and
+        Get (Mat, 1, 3) = 1 and
+        Get (Mat, 2, 1) = 0 and
+        Get (Mat, 2, 2) = 0 and
+        Get (Mat, 2, 3) = 1 and
+        Get (Mat, 3, 1) = 1 and
+        Get (Mat, 3, 2) = 1 and
+        Get (Mat, 3, 3) = 1);
 
-      T_Matrice_Float.Detruire (Mat);
+      Detruire (Mat);
     end;
 
     Close (File);
