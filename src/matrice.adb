@@ -49,7 +49,7 @@ package body Matrice is
       else
         Curseur_Cellule        :=
          new T_Cellule'
-          (Ligne    => 1, Valeur => Val, Suivante => null, Precedente => null);
+          (Ligne => 1, Valeur => Val, Suivante => null, Precedente => null);
         Mat.Matrice_Creuse (1) := Curseur_Cellule;
 
         while Index_Ligne < Mat.Lignes loop
@@ -178,7 +178,7 @@ package body Matrice is
       end Maj_Curseurs;
 
     begin
-      Mat.Poids    := (others => Zero);
+      Mat.Poids := (others => Zero);
 
       while not End_Of_File (File) loop
         begin
@@ -238,7 +238,7 @@ package body Matrice is
       Copier_Creuse;
     end if;
 
-    Copie.Poids    := Mat.Poids;
+    Copie.Poids := Mat.Poids;
 
     return Copie;
   end Copie;
@@ -730,30 +730,32 @@ package body Matrice is
   is
     NewPi      : T_Matrice (Pi.Lignes, Pi.Colonnes, Pi.Pleine);
     Curseur    : T_Vecteur_Creux;
-    Produit    : T_Valeur;
-    Alpha_N    : constant T_Valeur := Alpha / N;
+    Produits   : array (1 .. G.Colonnes) of T_Valeur := (others => Zero);
+    Alpha_N    : constant T_Valeur                   := Alpha / N;
     Default_Pi : constant T_Valeur := Somme (Pi) * ((Un - Alpha) / N);
   begin
     if G.Pleine then
       Pi := Pi * G;
     else
+      for I in 1 .. G.Colonnes loop
+        if Get_Poids (G, I) = Zero then
+          for J in 1 .. Pi.Colonnes loop
+            Produits (J) := Produits (J) + Get (Pi, 1, I) * Alpha_N;
+          end loop;
+        end if;
+      end loop;
+
       for J in 1 .. G.Colonnes loop
         Curseur := G.Matrice_Creuse (J);
-        Produit :=
-         Zero; -- On utilise une variable pour éviter de faire des Get, Set inutiles
-        for k in 1 .. G.Lignes loop
-
-          if Curseur /= null and then Curseur.all.Ligne = k
-          then -- curseur existe
-            Produit := Produit + Get (Pi, 1, k) * (Alpha / G.Poids (Curseur.all.Ligne));
-            Curseur := Curseur.all.Suivante;
-
-          elsif Get_Poids (G, k) = Zero then
-            Produit := Produit + (Get (Pi, 1, k) * Alpha_N);
-          end if;
+        while Curseur /= null loop
+          Produits (J) :=
+           Produits (J) +
+           Get (Pi, 1, Curseur.all.Ligne) * (Alpha / G.Poids (Curseur.all.Ligne));
+          Curseur      := Curseur.all.Suivante;
         end loop;
-        Set (NewPi, 1, J, Default_Pi + Produit);
+        Set (NewPi, 1, J, Default_Pi + Produits (J));
       end loop;
+
       Pi := NewPi;
     end if;
   end PageRankIter;
