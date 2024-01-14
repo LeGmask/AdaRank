@@ -79,7 +79,7 @@ package body Matrice is
   end Init;
 
   procedure Init_Fichier (File : in File_Type; Mat : out T_Matrice) is
-    I, J, Idx_Tab : Integer;
+    I, J : Integer;
 
     procedure Init_Fichier_Plein is
       Sommet_Courant : Integer := 0;
@@ -206,14 +206,6 @@ package body Matrice is
           when End_Error =>
             null;
         end;
-      end loop;
-      --  On parcours les poids pour trouver les lignes nulles
-      Idx_Tab := 1;
-      for I in 1 .. Mat.Poids'Length loop
-        if Mat.Poids (I) = Zero then
-          Mat.Zero_Lines (Idx_Tab) := I;
-          Idx_Tab                  := Idx_Tab + 1;
-        end if;
       end loop;
     end Init_Fichier_Creuse;
   begin
@@ -734,28 +726,48 @@ package body Matrice is
   end Somme;
 
   procedure PageRankIter
-   (Pi : in out T_Matrice; G : in T_Matrice; Alpha, N : in T_Valeur)
+   (Pi : in out T_Matrice; G : in out T_Matrice; Alpha, N : in T_Valeur)
   is
     NewPi      : T_Matrice (Pi.Lignes, Pi.Colonnes, Pi.Pleine);
     Curseur    : T_Vecteur_Creux;
     Produits   : array (1 .. G.Colonnes) of T_Valeur := (others => Zero);
     Alpha_N    : constant T_Valeur                   := Alpha / N;
     Default_Pi : constant T_Valeur := Somme (Pi) * ((Un - Alpha) / N);
-    Alpha_N_Pi : T_Valeur := Zero;
-  begin
-    if G.Pleine then
-      Pi := Pi * G;
-    else
-      declare
-        Idx     : Integer := 1;
-        RealIdx : Integer;
-      begin
+    Alpha_N_Pi : T_Valeur                            := Zero;
+
+    procedure Process_empty_lines is
+      Idx     : Integer := 1;
+      RealIdx : Integer;
+    begin
+      -- On verifie si Mat.Zero_Lines est initialisé ou si on est a
+      -- la première itération et alors on doit l'init
+      if G.Zero_Lines (1) = -1 then
+        for I in 1 .. G.Poids'Length loop
+          if G.Poids (I) = Zero then
+            Alpha_N_Pi :=
+             Alpha_N_Pi + Get (Pi, 1, I) * Alpha_N; -- mets a jour la somme
+
+            G.Zero_Lines (Idx) := I;
+            Idx                := Idx + 1;
+          end if;
+        end loop;
+      else
         while Idx <= G.Zero_count loop
           RealIdx    := G.Zero_Lines (Idx);
           Alpha_N_Pi := Alpha_N_Pi + Get (Pi, 1, RealIdx) * Alpha_N;
           Idx        := Idx + 1;
         end loop;
-      end;
+      end if;
+
+    end Process_empty_lines;
+  begin
+    if G.Pleine then
+      Pi := Pi * G;
+    else
+
+      if G.Zero_count > 0 then
+        Process_empty_lines;
+      end if;
 
       for J in 1 .. G.Colonnes loop
         Curseur := G.Matrice_Creuse (J);

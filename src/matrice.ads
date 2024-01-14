@@ -101,7 +101,7 @@ package Matrice is
   -- @param B : la matrice
 
   procedure PageRankIter
-   (Pi : in out T_Matrice; G : in T_Matrice; Alpha, N : in T_Valeur);
+   (Pi : in out T_Matrice; G : in out T_Matrice; Alpha, N : in T_Valeur);
   -- Applique une itération de PageRank dans le cas d'une matrice creuse
   -- @param Pi : le vecteur de probabilité
   -- @param G : la matrice d'adjacence
