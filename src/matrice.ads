@@ -148,9 +148,12 @@ private
   -- Matrice creuse pour les opérations
 
   type T_Poids is array (Positive range <>) of T_Valeur;
+  type T_Lines is array (Positive range <>) of Integer;
 
   type T_Matrice (Lignes, Colonnes : Positive; Pleine : Boolean) is record
-    Poids    : T_Poids (1 .. Lignes) := (others => Un);
+    Poids      : T_Poids (1 .. Lignes) := (others => Un);
+    Zero_count : Integer := 0;
+    Zero_Lines : T_Lines (1 .. Lignes) := (others => -1);
 
     case Pleine is
       when True =>

@@ -79,7 +79,7 @@ package body Matrice is
   end Init;
 
   procedure Init_Fichier (File : in File_Type; Mat : out T_Matrice) is
-    I, J : Integer;
+    I, J, Idx_Tab : Integer;
 
     procedure Init_Fichier_Plein is
       Sommet_Courant : Integer := 0;
@@ -178,7 +178,9 @@ package body Matrice is
       end Maj_Curseurs;
 
     begin
-      Mat.Poids := (others => Zero);
+      Mat.Poids      := (others => Zero);
+      Mat.Zero_Lines := (others => -1);
+      Mat.Zero_count := Mat.Poids'Length;
 
       while not End_Of_File (File) loop
         begin
@@ -188,11 +190,10 @@ package body Matrice is
 
           Get (File, I); -- on récupère l'arète actuelle
 
+          --  Poids
           if I + 1 /= Sommet_Courant then -- ie. on a changé d'arrête
-            -- On change de sommet relecture des curseurs pour les ponderer
-            --  Ponderer;
-
             Sommet_Courant := I + 1;
+            Mat.Zero_count := Mat.Zero_count - 1;
           end if;
           Mat.Poids (Sommet_Courant) := Mat.Poids (Sommet_Courant) + Un;
 
@@ -206,7 +207,14 @@ package body Matrice is
             null;
         end;
       end loop;
-      --  Ponderer;
+      --  On parcours les poids pour trouver les lignes nulles
+      Idx_Tab := 1;
+      for I in 1 .. Mat.Poids'Length loop
+        if Mat.Poids (I) = Zero then
+          Mat.Zero_Lines (Idx_Tab) := I;
+          Idx_Tab                  := Idx_Tab + 1;
+        end if;
+      end loop;
     end Init_Fichier_Creuse;
   begin
     if Mat.Pleine then
@@ -733,27 +741,32 @@ package body Matrice is
     Produits   : array (1 .. G.Colonnes) of T_Valeur := (others => Zero);
     Alpha_N    : constant T_Valeur                   := Alpha / N;
     Default_Pi : constant T_Valeur := Somme (Pi) * ((Un - Alpha) / N);
+    Alpha_N_Pi : T_Valeur := Zero;
   begin
     if G.Pleine then
       Pi := Pi * G;
     else
-      for I in 1 .. G.Colonnes loop
-        if Get_Poids (G, I) = Zero then
-          for J in 1 .. Pi.Colonnes loop
-            Produits (J) := Produits (J) + Get (Pi, 1, I) * Alpha_N;
-          end loop;
-        end if;
-      end loop;
+      declare
+        Idx     : Integer := 1;
+        RealIdx : Integer;
+      begin
+        while Idx <= G.Zero_count loop
+          RealIdx    := G.Zero_Lines (Idx);
+          Alpha_N_Pi := Alpha_N_Pi + Get (Pi, 1, RealIdx) * Alpha_N;
+          Idx        := Idx + 1;
+        end loop;
+      end;
 
       for J in 1 .. G.Colonnes loop
         Curseur := G.Matrice_Creuse (J);
         while Curseur /= null loop
           Produits (J) :=
            Produits (J) +
-           Get (Pi, 1, Curseur.all.Ligne) * (Alpha / G.Poids (Curseur.all.Ligne));
+           Get (Pi, 1, Curseur.all.Ligne) *
+            (Alpha / G.Poids (Curseur.all.Ligne));
           Curseur      := Curseur.all.Suivante;
         end loop;
-        Set (NewPi, 1, J, Default_Pi + Produits (J));
+        Set (NewPi, 1, J, Default_Pi + Alpha_N_Pi + Produits (J));
       end loop;
 
       Pi := NewPi;
