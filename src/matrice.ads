@@ -29,6 +29,8 @@ package Matrice is
   -- type T_Dim is array (1 .. 2) of Integer;
   type T_Matrice (Lignes, Colonnes : Positive; Pleine : Boolean) is private;
 
+  FICHIER_INVALIDE : exception;
+
   procedure Init (Mat : out T_Matrice; Val : in T_Valeur := Zero);
   -- Initialise une matrice avec une valeur par défaut
   -- @param Mat : la matrice à initialiser

@@ -127,6 +127,21 @@ procedure Page_Rank is
       Detruire (G);
    end Algorithme;
 
+   procedure Help is
+   -- Donner de l'aide à l'utilisateur sur les arguments en ligne de commande
+   begin
+      Put_Line
+        ("Usage : page_Rank [-P | -C] [-A alpha] [-E epsilon] [-K k] [-R prefixe] fichier");
+      Put_Line ("  -P : Matrice pleine (par défaut)");
+      Put_Line ("  -C : Matrice creuse");
+      Put_Line ("  -A : Coefficient alpha (par défaut : 0.85)");
+      Put_Line ("  -E : Epsilon (par défaut : 0.0)");
+      Put_Line ("  -K : Nombre d'itérations (par défaut : 150)");
+      Put_Line ("  -R : Préfixe des fichiers de sortie (par défaut : output)");
+      Put_Line
+        ("  fichier : Emplacement du fichier contenant le graphe du réseau");
+   end Help;
+
    ALPHA_INVALIDE : exception;
    EPS_INVALIDE   : exception;
    K_INVALIDE     : exception;
@@ -229,17 +244,25 @@ begin
 exception
    when PAS_DE_FICHIER =>
       Put_Line ("Pas de fichier fourni, veuillez relire votre appel");
+      Help;
    when ALPHA_INVALIDE =>
       Put_Line ("Alpha invalide, veuillez relire votre appel");
+      Help;
    when EPS_INVALIDE   =>
       Put_Line ("Epsilon invalide, veuillez relire votre appel");
+      Help;
    when K_INVALIDE     =>
       Put_Line ("K invalide, veuillez relire votre appel");
+      Help;
    when SYNTAXE        =>
       Put_Line ("Syntaxe invalide, veuillez relire votre appel");
+      Help;
    when Name_Error     =>
       Put_Line
-        ("Emplacement du fichier invalide, veuillez relire votre appel");
+        ("Emplacement du fichier .net invalide, veuillez relire votre appel");
+      Help;
+   when FICHIER_INVALIDE =>
+      Put_Line ("Contenu du fichier .net fourni invalide, veuillez le vérifier");
    -- when others               =>
    --   null;
 end Page_Rank;

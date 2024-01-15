@@ -82,7 +82,6 @@ package body Matrice is
     I, J : Integer;
     N_Col : Integer := Mat.Colonnes; -- Nombre de colonnes
     N_Lig : Integer := Mat.Lignes; -- Nombre de lignes
-    FICHIER_INVALIDE : exception;
 
     procedure Init_Fichier_Plein is
       Sommet_Courant : Integer := 0;
@@ -233,9 +232,6 @@ package body Matrice is
     else
       Init_Fichier_Creuse;
     end if;
-  exception
-    when FICHIER_INVALIDE =>
-      Put_Line ("Le fichier .net fourni est invalide");
   end Init_Fichier;
 
   function Copie (Mat : in T_Matrice) return T_Matrice is
