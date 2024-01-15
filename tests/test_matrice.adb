@@ -50,7 +50,7 @@ procedure Test_Matrice is
       pragma Assert
        (Get_Poids (Mat, 1) = 2 and
         Get_Poids (Mat, 2) = 1 and
-        Get_Poids (Mat, 3) = 3
+        Get_Poids (Mat, 3) = 2
        );
 
       pragma Assert
@@ -62,7 +62,7 @@ procedure Test_Matrice is
         Get (Mat, 2, 3) = 1 and
         Get (Mat, 3, 1) = 1 and
         Get (Mat, 3, 2) = 1 and
-        Get (Mat, 3, 3) = 1);
+        Get (Mat, 3, 3) = 0);
 
       Detruire (Mat);
     end;

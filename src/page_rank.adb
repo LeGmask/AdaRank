@@ -74,12 +74,15 @@ procedure Page_Rank is
             for I in 1 .. N loop
                if Get_Poids (S, I) = 0.0 then
                   for J in 1 .. N loop
-                     Set (S, I, J, T_Double (1.0/ Float (N)));
+                     Set (S, I, J, T_Double (1.0 / Float (N)));
                      Set_Poids (S, I, T_Double (N));
                   end loop;
                else
                   for J in 1 .. N loop
-                     Set (S, I, J, T_Double (Float (Get (S, I, J))/ Float (Get_Poids(S, I))));
+                     Set
+                       (S, I, J,
+                        T_Double
+                          (Float (Get (S, I, J)) / Float (Get_Poids (S, I))));
                   end loop;
                end if;
             end loop;
@@ -164,24 +167,39 @@ begin
                Plein := False;
                I     := I + 1;
             when 'A' =>
-               Alpha := Float'Value (Argument (I + 1));
-               if Alpha > 1.0 or else Alpha < 0.0 then
-                  raise ALPHA_INVALIDE;
-               end if;
-               I := I + 2;
+               begin
+                  Alpha := Float'Value (Argument (I + 1));
+                  if Alpha > 1.0 or else Alpha < 0.0 then
+                     raise ALPHA_INVALIDE;
+                  end if;
+                  I := I + 2;
+               exception
+                  when Constraint_Error =>
+                     raise ALPHA_INVALIDE;
+               end;
             when 'E' =>
-               Eps := Float'Value (Argument (I + 1));
-               if Eps < 0.0 then
-                  raise EPS_INVALIDE;
-               end if;
-               I := I + 2;
+               begin
+                  Eps := Float'Value (Argument (I + 1));
+                  if Eps < 0.0 then
+                     raise EPS_INVALIDE;
+                  end if;
+                  I := I + 2;
+               exception
+                  when Constraint_Error =>
+                     raise EPS_INVALIDE;
+               end;
             when 'K' =>
-               K := Integer'Value (Argument (I + 1));
-               if K < 0 then
-                  raise K_INVALIDE;
-               end if;
-               I := I + 2;
-            when 'r' =>
+               begin
+                  K := Integer'Value (Argument (I + 1));
+                  if K < 0 then
+                     raise K_INVALIDE;
+                  end if;
+                  I := I + 2;
+               exception
+                  when Constraint_Error =>
+                     raise K_INVALIDE;
+               end;
+            when 'R' =>
                Prefixe := To_Unbounded_String (Argument (I + 1));
                I       := I + 2;
             when others =>

@@ -80,6 +80,9 @@ package body Matrice is
 
   procedure Init_Fichier (File : in File_Type; Mat : out T_Matrice) is
     I, J : Integer;
+    N_Col : Integer := Mat.Colonnes; -- Nombre de colonnes
+    N_Lig : Integer := Mat.Lignes; -- Nombre de lignes
+    FICHIER_INVALIDE : exception;
 
     procedure Init_Fichier_Plein is
       Sommet_Courant : Integer := 0;
@@ -93,15 +96,24 @@ package body Matrice is
             Skip_Line (File);
           end if;
 
-          Get (File, I);
+          Get (File, I); -- on récupère l'arète actuelle
+          Get (File, J); -- on récupère la colonne
+          J := J + 1; -- on décale de 1 pour avoir un indice dans le bon intervalle
+          I := I + 1;
 
-          if I + 1 /= Sommet_Courant then
-            Sommet_Courant := I + 1;
+          -- Vérifier que I et J sont valides
+          if not ( 1 <= I and I <= N_Lig and 1 <= J and J <= N_Col ) then
+            raise FICHIER_INVALIDE;
           end if;
-          Mat.Poids (Sommet_Courant) := Mat.Poids (Sommet_Courant) + Un;
 
-          Get (File, J);
-          Set (Mat, Sommet_Courant, J + 1, Un);
+          if I /= J then
+            if I /= Sommet_Courant then
+              Sommet_Courant := I;
+            end if;
+            Mat.Poids (Sommet_Courant) := Mat.Poids (Sommet_Courant) + Un;
+          
+            Set (Mat, Sommet_Courant, J, Un);
+          end if;
         exception
           when End_Error =>
             null;
@@ -189,19 +201,26 @@ package body Matrice is
           end if;
 
           Get (File, I); -- on récupère l'arète actuelle
-
-          --  Poids
-          if I + 1 /= Sommet_Courant then -- ie. on a changé d'arrête
-            Sommet_Courant := I + 1;
-            Mat.Zero_count := Mat.Zero_count - 1;
-          end if;
-          Mat.Poids (Sommet_Courant) := Mat.Poids (Sommet_Courant) + Un;
-
           Get (File, J); -- on récupère la colonne
           J := J + 1; -- on décale de 1 pour avoir un indice de 1 à n
+          I := I + 1;
 
-          -- mets a jour le curseur
-          Maj_Curseurs (J);
+          -- Vérifier que I et J sont valides
+          if not ( 1 <= I and I <= N_Lig and 1 <= J and J <= N_Col ) then
+            raise FICHIER_INVALIDE;
+          end if;
+
+          if I /= J then
+            --  Poids
+            if I /= Sommet_Courant then -- ie. on a changé d'arrête
+              Sommet_Courant := I;
+              Mat.Zero_count := Mat.Zero_count - 1;
+            end if;
+            Mat.Poids (Sommet_Courant) := Mat.Poids (Sommet_Courant) + Un;
+
+            -- Mettre a jour le curseur
+            Maj_Curseurs (J);
+          end if;
         exception
           when End_Error =>
             null;
@@ -214,6 +233,9 @@ package body Matrice is
     else
       Init_Fichier_Creuse;
     end if;
+  exception
+    when FICHIER_INVALIDE =>
+      Put_Line ("Le fichier .net fourni est invalide");
   end Init_Fichier;
 
   function Copie (Mat : in T_Matrice) return T_Matrice is
