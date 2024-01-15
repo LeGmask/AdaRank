@@ -63,8 +63,8 @@ begin
     Put ("  -> Test du mode plein... ");
     Tester_Trifusion(True);
     Put_Line(" OK");
-    Put ("  -> Test du mode creux... ");
-    Tester_Trifusion(False);
-    Put_Line(" OK");
+    --  Put ("  -> Test du mode creux... ");
+    --  Tester_Trifusion(False);
+    --  Put_Line(" OK");
     Put_Line("<<< Test du module Trifusion OK");
 end Test_Trifusion;

@@ -12,7 +12,9 @@ generic
     -- @param Droite : la T_Valeur de droite
 package Trifusion is
 
-    procedure Tri (Vecteur : in out T_Matrice; Ordre : out Matrice_Ordre.T_Matrice);
+    procedure Tri
+       (Vecteur : in out T_Matrice; Ordre : out Matrice_Ordre.T_Matrice) with
+       Pre => Vecteur.Pleine and Ordre.Pleine;
     -- Trie un vecteur ligne de T_Valeurs par ordre décroissant selon la méthode du trifusion et stocke dans "Ordre" les déplacements de valeurs effectués (Ordre doit avoir été initialisée avec des valeurs)
     -- @param Vecteur : le vecteur à trier
     -- @param Ordre : le vecteur qui stockera les déplacements de valeurs

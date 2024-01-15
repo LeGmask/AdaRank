@@ -11,28 +11,22 @@ package body Trifusion is
          procedure Fusion
            (Vecteur : in out T_Matrice; Deb, Milieu, Fin : in Integer)
          is
-            I, J               : Integer := 0;
-            Vecteur_trie       : T_Matrice               := Copie (Vecteur);
-            Ordre_trie         : Matrice_Ordre.T_Matrice :=
-              Matrice_Ordre.Copie (Ordre);
-            Vecteur_A_Detruire : T_Matrice               := Vecteur;
-            Ordre_A_Detruire   : Matrice_Ordre.T_Matrice := Ordre;
-            Temp1, Temp2 : T_Valeur;
+            I, J               : Integer                 := 0;
+            Vecteur_trie       : T_Matrice               := Vecteur;
+            Ordre_trie         : Matrice_Ordre.T_Matrice := Ordre;
+            Temp1, Temp2       : T_Valeur;
          begin
             while (I + Deb < Milieu) and then (J + Milieu <= Fin) loop
                Temp1 := Get (Vecteur, 1, I + Deb);
                Temp2 := Get (Vecteur, 1, J + Milieu);
                if Temp2 < Temp1 then
-                  Set
-                    (Vecteur_trie, 1, Deb + I + J, Temp1);
+                  Set (Vecteur_trie, 1, Deb + I + J, Temp1);
                   Matrice_Ordre.Set
                     (Ordre_trie, 1, Deb + I + J,
                      Matrice_Ordre.Get (Ordre, 1, I + Deb));
                   I := I + 1;
                else
-                  Set
-                    (Vecteur_trie, 1, Deb + I + J,
-                     Temp2);
+                  Set (Vecteur_trie, 1, Deb + I + J, Temp2);
                   Matrice_Ordre.Set
                     (Ordre_trie, 1, Deb + I + J,
                      Matrice_Ordre.Get (Ordre, 1, J + Milieu));
@@ -56,12 +50,8 @@ package body Trifusion is
                   Matrice_Ordre.Get (Ordre, 1, J + Milieu));
                J := J + 1;
             end loop;
-            Vecteur := Copie (Vecteur_trie);
-            Ordre   := Matrice_Ordre.Copie (Ordre_trie);
-            Detruire (Vecteur_A_Detruire);
-            Matrice_Ordre.Detruire (Ordre_A_Detruire);
-            Matrice_Ordre.Detruire (Ordre_trie);
-            Detruire (Vecteur_trie);
+            Vecteur := Vecteur_trie;
+            Ordre   := Ordre_trie;
          end Fusion;
 
          Milieu : Integer;

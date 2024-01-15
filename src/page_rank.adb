@@ -98,14 +98,14 @@ procedure Page_Rank is
       I := 0;
 
       Init (Pi, T_Double (1.0 / Float (N)));
-      Pi_avant := Copie (Pi);
+      Pi_avant := Pi;
       PageRankIter (Pi, G, T_Double (Alpha), T_Double (N));
 
       -- Calcul du Pi utilisé pour la norme
-      Pi_norm := Pi + Pi_avant * (-1.0);
+      Pi_norm := Pi + (Pi_avant * (-1.0));
 
       while (I < K) and then Norme (Pi_norm) > T_Double (Eps) loop
-         Pi_avant := Copie (Pi);
+         Pi_avant := Pi;
 
          PageRankIter (Pi, G, T_Double (Alpha), T_Double (N));
 
