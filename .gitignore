@@ -24,3 +24,9 @@ gmon.out
 
 # benchmark file
 benchmark.md
+
+# vizualization files
+file.dot
+graph.png
+test.html
+lib/
