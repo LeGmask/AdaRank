@@ -79,9 +79,9 @@ package body Matrice is
   end Init;
 
   procedure Init_Fichier (File : in File_Type; Mat : out T_Matrice) is
-    I, J : Integer;
-    N_Col : Integer := Mat.Colonnes; -- Nombre de colonnes
-    N_Lig : Integer := Mat.Lignes; -- Nombre de lignes
+    I, J  : Integer;
+    N_Col : constant Integer := Mat.Colonnes; -- Nombre de colonnes
+    N_Lig : constant Integer := Mat.Lignes; -- Nombre de lignes
 
     procedure Init_Fichier_Plein is
       Sommet_Courant : Integer := 0;
@@ -97,11 +97,12 @@ package body Matrice is
 
           Get (File, I); -- on récupère l'arète actuelle
           Get (File, J); -- on récupère la colonne
-          J := J + 1; -- on décale de 1 pour avoir un indice dans le bon intervalle
+          J :=
+           J + 1; -- on décale de 1 pour avoir un indice dans le bon intervalle
           I := I + 1;
 
           -- Vérifier que I et J sont valides
-          if not ( 1 <= I and I <= N_Lig and 1 <= J and J <= N_Col ) then
+          if not (1 <= I and I <= N_Lig and 1 <= J and J <= N_Col) then
             raise FICHIER_INVALIDE;
           end if;
 
@@ -110,7 +111,7 @@ package body Matrice is
               Sommet_Courant := I;
             end if;
             Mat.Poids (Sommet_Courant) := Mat.Poids (Sommet_Courant) + Un;
-          
+
             Set (Mat, Sommet_Courant, J, Un);
           end if;
         exception
@@ -205,7 +206,7 @@ package body Matrice is
           I := I + 1;
 
           -- Vérifier que I et J sont valides
-          if not ( 1 <= I and I <= N_Lig and 1 <= J and J <= N_Col ) then
+          if not (1 <= I and I <= N_Lig and 1 <= J and J <= N_Col) then
             raise FICHIER_INVALIDE;
           end if;
 

@@ -4,7 +4,7 @@ project PageRank is
   for Exec_Dir use "build/.";
    
 
-  for Main use ("pagerank.adb");
+  for Main use ("src/page_rank.adb");
 
   package Builder is
     for Default_Switches ("ada") use ("-s");
