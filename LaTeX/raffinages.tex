@@ -1,0 +1,398 @@
+\LoadClass{NewTeXRaffinage}
+\documentclass{NewTeXRaffinage}
+\usepackage[utf8]{inputenc}
+\usepackage{tabularx}
+\title{Projet PageRank}
+\author{\'Equipe  EF7 : Evann DREUMONT  et  Timothée KLEIN}
+\date{Décembre 2023}
+\usepackage{scrextend}
+
+
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\newpage
+
+\section{Introduction}
+Ce fichier vise à expliquer le fonctionnement et les choix que nous avons réalisés dans la réalisation du programme de PageRank visant a noter les pages webs en fonction de leur référencement.
+\section{Liste des modules}
+Deux sous-modules sont implémentés : \\
+\begin{itemize}
+    \item Module Matrice permettant la gestion de matrices de taille quelconque
+    \item Module Trifusion permettant de réaliser le trifusion
+\end{itemize}
+
+
+
+\section{Raffinages}
+
+
+
+
+\subsection{Page Rank}
+
+
+\subsubsection{Description}
+L'algorithme PageRank permet de calculer la popularité de pages webs en fonction de leurs référencements, stockés dans un graphe. Il fournit en sortie deux fichiers .prw et .pr, qui sont respectivement les poids des pages et les pages ordonées selon leur poids (plus haut poids -> meilleure popularité).
+
+\subsubsection{Raffinages}
+
+
+
+
+\textbf{R0}: Calculer le Rang de chaque page ainsi que le poids de chacune des pages dans un graphe avec des matrices pleines
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{|c|c|c|}
+        \hline
+        Fichier Graphe        & Fichier PageRank              & Fichier Poids  \\ 
+        \hline
+        \begin{tabular}[c]{@{}c@{}}6\\ 0 1\\ 0 2\\ 2 0\\ 2 1\\ 2 4\\ 3 4\\ 3 5\\ 4 3\\ 4 5\\ 5 3\end{tabular} & \begin{tabular}[c]{@{}c@{}}3\\ 5\\ 4\\ 1\\ 2\\ 0\end{tabular} & \begin{tabular}[c]{@{}c@{}}6 0.85000000000000 150\\ 0.34870368521482\\ 0.26859608185466\\ 0.19990381197332\\ 0.07367926270376\\ 0.05741241249643\\ 0.05170474575702\end{tabular} \\ \hline
+    \end{tabular}
+    \caption{Exemple de l'algorithme PageRank}
+\end{table}
+
+
+\textbf{R1}: \textbf{Comment} "Calculer le Rang de chaque page ainsi que le poids de chacune des pages dans un graphe avec des matrices pleines ?" 
+\begin{addmargin}[5em]{0pt}
+    Gérer les arguments avec lesquels le programme est lancé  \\
+    \hspace*{0pt}\hfill \textbf{out} : \textit{Entier} alpha; \textit{Flottants} k, eps; \textit{Booléens} plein, valide; \textit{String} prefixe; \textit{String} reseau \\
+    \textbf{Si} valide \textbf{Alors} 
+    \begin{addmargin}[3em]{0pt}
+        Charger le graphe dans une matrice d'adjacence pondérée \\
+        \hspace*{0pt}\hfill \textbf{in} : \textit{String} reseau; \textbf{out} : \textit{Matrice} H, \textit{Tableau} sortants, \textit{Entier} n \\
+        Appliquer l'algorithme PageRank jusqu'à terminaison
+        \hspace*{0pt}\hfill \textbf{in}: H, n, alpha, k, eps; \textbf{out}:  \textit{Matrice} Pi  \\
+        Sauvegarder les résultats 
+        \hspace*{0pt}\hfill \textbf{in}: Pi, n, alpha, k, prefixe
+    \end{addmargin}
+    \textbf{Fin Si}
+\end{addmargin}
+
+
+\textbf{R2}: \textbf{Comment} "Gérer les arguments avec lesquels le programme est lancé" ?
+\begin{addmargin}[5em]{0pt}
+    valide <- Vrai \\
+    Initialiser les valeurs par défaut aux arguments
+    \hspace*{0pt}\hfill \textbf{out} : alpha, k, eps, prefixe, \textit{Booléen} plein \\
+    Récupérer les arguments fournis
+    \hspace*{0pt}\hfill \textbf{out} : alpha, k, eps, plein, prefixe, reseau. \\
+    Vérifier si les arguments sont valides
+    \hspace*{0pt}\hfill \textbf{in} : alpha, k, eps; \textbf{out} : \textit{Booléen} valide
+\end{addmargin}
+
+\textbf{R2}: \textbf{Comment} "Charger le graphe dans une matrice d'adjacence pondérée" ?
+\begin{addmargin}[5em]{0pt}
+    \textbf{Ouvrir} reseau \\
+    n <- \textit{Entier} sur la première ligne du fichier \\
+    H <- \textit{Matrice} n x n vide \\
+    Stocker dans H chaque référencement 
+    \hspace*{0pt}\hfill \textbf{in}: reseau, n; \textbf{out}: H, \textit{Tableau} sortants \\
+    \textbf{Fermer} reseau\\
+    Pondérer les lignes 
+    \hspace*{0pt}\hfill \textbf{in}: n, sortants; \textbf{in-out} : H 
+\end{addmargin}
+
+\textbf{R2}: \textbf{Comment} "Appliquer l'algorithme PageRank jusqu'à terminaison" ?
+\begin{addmargin}[5em]{0pt}
+    Créer la matrice S 
+    \hspace*{0pt}\hfill \textbf{in} n; \textbf{out}: \textit{Matrice} S \\
+    Créer la matrice G 
+    \hspace*{0pt}\hfill \textbf{in}: S, n, alpha; \textbf{out}: \textit{Matrice} G \\
+    Calculer la matrice Pi par itérations
+    \hspace*{0pt}\hfill \textbf{in}: G, k, eps \textbf{out}: Pi \\
+\end{addmargin}
+
+\textbf{R2}: \textbf{Comment} "Sauvegarder les résultats" ?
+\begin{addmargin}[5em]{0pt}
+    Trier le vecteur Pi \hspace*{0pt}\hfill \textbf{in-out}: \textit{Matrice} Pi\\
+    \textbf{Ecrire} n, alpha et k à la première ligne dans le fichier poids (prefixe.prw) \\
+    \textbf{Pour chaque} ligne du vecteur Pi
+     \begin{addmargin}[3em]{0pt}
+        \textbf{Ecrire} dans une nouvelle ligne du fichier poids (prefixe.prw) la valeur de la ligne \\
+        \textbf{Ecrire} dans une nouvelle ligne du fichier PageRank (prefixe.pr) l'index de la ligne 
+     \end{addmargin}
+     \textbf{Fin Pour} 
+\end{addmargin}
+
+
+\textbf{R3}: \textbf{Comment} "Initialiser les valeurs par défaut aux arguments"?
+\begin{addmargin}[5em]{0pt}
+    alpha <- 0.85 \\
+    k <- 150 \\
+    plein <- Vrai \\
+    eps <- 0.0 \\
+    prefixe <- "output"
+\end{addmargin}
+
+\textbf{R3}: \textbf{Comment} "Récupérer les arguments fournis" ?
+\begin{addmargin}[5em]{0pt}
+    i<-0 \\
+    \textbf{Tant Que} i < (Nombre d'arguments-1) \textbf{faire}
+        \begin{addmargin}[3em]{0pt}
+            \textbf{Selon} Argument(i) \textbf{Dans}
+            \begin{addmargin}[3em]{0pt}
+                "-P" -> plein <- Vrai; i<-i+1 \\
+                "-C" -> plein <- Faux; i<-i+1 \\
+                "-A" -> alpha <- Argument(i+1); i<-i+2 \\
+                "-E" -> eps <- Argument(i+1); i<-i+2 \\
+                "-K" -> k <- Argument(i+1); i<-i+2 \\
+                "-R" -> prefixe <- Argument(i+1); i<-i+2
+            \end{addmargin}
+            \textbf{Fin Selon}
+        \end{addmargin}
+    \textbf{Fin Tant Que} \\
+    reseau <- Argument(i)
+\end{addmargin}
+
+\textbf{R3}: \textbf{Comment} "Vérifier si les arguments sont valides" ?
+\begin{addmargin}[5em]{0pt}
+    \textbf{Si} alpha>1\textbf{ Ou Alors} alpha<0 \textbf{Ou Alors} k<0 \textbf{Ou Alors} eps<0 \textbf{Ou Alors} valide = Faux \textbf{Ou Alors} reseau n'est pas accessible \textbf{Alors}
+        \begin{addmargin}[3em]{0pt}
+            \textbf{Ecrire}("Un argument a une valeur illégale, veuillez relire votre appel") \\
+            valide <- Faux
+        \end{addmargin}
+    \textbf{Fin Si}
+\end{addmargin}
+
+\textbf{R3}: \textbf{Comment} "Stocker dans H chaque référencement" ?
+\begin{addmargin}[5em]{0pt}
+    sortants <- \textit{Tableau} vide de taille n \\
+    \textbf{Pour chaque} ligne de reseau \textbf{Faire}
+        \begin{addmargin}[3em]{0pt}
+            i <- premier nombre de la ligne \\
+            j <- deuxieme nombre de la ligne \\
+            H(i,j) <- H(i,j) + 1 \\
+            sortants[i] <- sortants[i] + 1
+        \end{addmargin}
+    \textbf{Fin Pour}
+\end{addmargin}
+
+\textbf{R3}: \textbf{Comment} "Pondérer les lignes" ?
+\begin{addmargin}[5em]{0pt}
+    \textbf{Pour} i de 1 à n pas 1 \textbf{faire}
+        \begin{addmargin}[3em]{0pt}
+            \textbf{Pour} j de 1 à n pas 1 \textbf{faire}
+            \begin{addmargin}[3em]{0pt}
+                H(i,j)<- H(i,j)/sortants[i]
+            \end{addmargin}
+            \textbf{Fin Pour}
+        \end{addmargin}
+    \textbf{Fin Pour}
+\end{addmargin}
+
+\textbf{R3}: \textbf{Comment} "Créer la matrice S" ?
+\begin{addmargin}[5em]{0pt}
+    S <- copie(H) \\
+    \textbf{Pour} i de 1 à n pas 1 \textbf{Faire}
+        \begin{addmargin}[3em]{0pt}
+        \textbf{Si} sortants[i]=0  \textbf{Alors}
+            \begin{addmargin}[3em]{0pt}
+            \textbf{Pour} j de 1 à n pas 1 \textbf{Faire}
+                \begin{addmargin}[3em]{0pt}
+                S(i,j) <- 1/n
+                \end{addmargin}
+            \textbf{Fin Pour}
+            \end{addmargin}
+        \textbf{Fin Si}
+        \end{addmargin}
+    \textbf{Fin Pour}
+\end{addmargin}
+
+\textbf{R3}: \textbf{Comment} "Créer la matrice G" ?
+\begin{addmargin}[5em]{0pt}
+    Attila <- \textit{Matrice} n x n remplie de huns \\
+    G <- alpha * S + Attila * (1-alpha)/n
+\end{addmargin}
+
+\textbf{R3}: \textbf{Comment} "Calculer la matrice Pi par itérations" ?
+\begin{addmargin}[5em]{0pt}
+    i <- 1 \\
+    Pi\_avant <- \textit{Matrice} n x 1 remplie de 1/n \\
+    Pi <- Pi\_avant * G \\
+    \textbf{Tant Que} i<k \textbf{Et} || Pi - Pi\_avant || > eps \textbf{Faire}
+        \begin{addmargin}[5em]{0pt}
+            Pi\_avant <- Pi \\
+            Pi <- Pi * G
+        \end{addmargin}
+    \textbf{Fin TQ}
+\end{addmargin}
+
+
+
+
+\subsection{Module Matrice}
+
+\subsubsection{Description}
+
+Ce module fournit le type Matrice et permet des opérations élémentaires sur celui-ci. De plus, le module est générique et sera implémenté de telle sorte qu'il prend en paramètre le type de structure utilisé, c'est-à-dire si c'est une matrice pleine ou une matrice creuse.
+
+\subsubsection{Raffinages}
+
+\textbf{R0}: Multiplier deux matrices carrées A et B de taille n,p et p,l
+
+\textbf{R1}: \textbf{Comment} "Multiplier deux matrices carrées A et B de taille n,p et p,l" ?
+\begin{addmargin}[5em]{0pt}
+    Initialiser une matrice M vide de taille n,l  \hspace*{0pt}\hfill \textbf{out}: \textit{Matrice} M 
+    \newline Remplir cette matrice avec les coefficients du produit \hspace*{0pt}\hfill \textbf{in-out}: \textit{Matrice} M 
+    \newline Renvoyer M \hspace*{0pt}\hfill \textbf{in}: \textit{Matrice} M 
+\end{addmargin}
+
+\textbf{R2}: \textbf{Comment} "Remplir cette matrice avec les coefficients du produits" ?
+\begin{addmargin}[5em]{0pt}
+    \textbf{Pour} i allant de 1 à n \textbf{Faire}
+    \begin{addmargin}[3em]{0pt}
+        Pour j allant de 1 à l faire
+        \begin{addmargin}[3em]{0pt}
+            M(i,j) <- Somme pour k allant de 1 à p de A(i,k)*B(k,j)
+        \end{addmargin}
+        \textbf{Fin Pour}
+    \end{addmargin}
+    \textbf{Fin Pour}
+\end{addmargin}
+
+\textbf{R0}: Ajouter deux matrices A et B de taille n,p
+
+\textbf{R1}: \textbf{Comment} "Ajouter deux matrices A et B de taille n,p" ?
+\begin{addmargin}[5em]{0pt}
+    Initialiser une matrice M vide de taille n,p \hspace*{0pt}\hfill \textbf{out}: \textit{Matrice} M 
+    \newline Remplir cette matrice avec les coefficients de la somme \hspace*{0pt}\hfill  \textbf{in-out}: \textit{Matrice} M 
+    \newline Renvoyer M \hspace*{0pt}\hfill \textbf{in}: \textit{Matrice} M 
+\end{addmargin}
+
+\textbf{R2}: \textbf{Comment} "Remplir cette matrice avec les coefficients de la somme" ?
+\begin{addmargin}[5em]{0pt}
+    \textbf{Pour} i allant de 1 à n \textbf{faire}
+    \begin{addmargin}[3em]{0pt}
+        \textbf{Pour} j allant de 1 à p \textbf{faire}
+        \begin{addmargin}[3em]{0pt}
+            M(i,j) <- A(i,j)+B(i,j)
+        \end{addmargin}
+        \textbf{Fin Pour}
+    \end{addmargin}
+    \textbf{Fin Pour}
+\end{addmargin}
+
+
+
+\textbf{R0}: Multiplier une matrice A par un scalaire
+
+\textbf{R1}: \textbf{Comment} "Multiplier une matrice A par un scalaire k" ?
+\begin{addmargin}[5em]{0pt}
+    \textbf{Pour} i allant de 1 à n \textbf{faire}
+    \begin{addmargin}[3em]{0pt}
+        \textbf{Pour} j allant de 1 à p \textbf{faire}
+        \begin{addmargin}[3em]{0pt}
+            A(i,j) <- A(i,j)*k
+        \end{addmargin}
+        \textbf{Fin Pour}
+    \end{addmargin}
+    \textbf{Fin Pour}
+\end{addmargin}
+
+
+
+\textbf{R0}: Transposer une matrice A de taille n,p
+
+\textbf{R1}: \textbf{Comment} "Transposer une matrice A de taille n,p" ?
+\begin{addmargin}[5em]{0pt}
+    Initialiser une matrice M vide de taille p,n \hspace*{0pt}\hfill \textbf{out}: \textit{Matrice} M 
+    \newline Remplir M \hspace*{0pt}\hfill \textbf{in-out}: \textit{Matrice} M 
+    \newline Renvoyer M \hspace*{0pt}\hfill \textbf{in}: \textit{Matrice} M 
+\end{addmargin}
+
+\textbf{R2}: \textbf{Comment} "Remplir M" ?
+\begin{addmargin}[5em]{0pt}
+    \textbf{Pour} i allant de 1 à p \textbf{faire}
+    \begin{addmargin}[3em]{0pt}
+        \textbf{Pour} j allant de 1 à n \textbf{faire}
+        \begin{addmargin}[3em]{0pt}
+            M(i,j) <- A(j,i)
+        \end{addmargin}
+        \textbf{Fin Pour}
+    \end{addmargin}
+    \textbf{Fin Pour}
+\end{addmargin}
+
+
+\subsection{Module Trifusion}
+
+\subsubsection{Description}
+
+Module permettant de trier un vecteur selon un ordre décroissant avec la méthode du tri fusion.
+
+\subsubsection{Raffinages}
+
+\textbf{R0}: Trier un vecteur selon un ordre décroissant avec un opérateur d'ordre.
+
+\textbf{R1}: \textbf{Comment} "Trier un vecteur selon un ordre décroissant avec un opérateur d'ordre."
+\begin{addmargin}[5em]{0pt}
+    début <- 1 \\
+    fin <- Taille du vecteur \\
+    Appeler l'algorithme récursif de tri \hspace*{0pt}\hfill \textbf{in-out}: \textit{Matrice}: vecteur, \textbf{in}: \textit{Entiers}: début, fin; \textit{Fonction} Opérateur
+\end{addmargin}
+
+\textbf{R2}: \textbf{Comment} "Appeler l'algorithme récursif de tri"
+\begin{addmargin}[5em]{0pt}
+    \textbf{Si}  non début  > fin \textbf{Alors}
+    \begin{addmargin}[3em]{0pt}
+        milieu <- (début + fin) / 2 \\
+        Appeler l'algorithme récursif de tri  avec vecteur, début et milieu \\
+        Appeler l'algorithme récursif de tri  avec vecteur, milieu+1 et fin \\
+        Fusion des deux moitiés triées 
+        \hspace*{0pt}\hfill \textbf{in-out}:Vecteur; \textbf{in} : début, milieu, fin, Opérateur
+    \end{addmargin}
+    \textbf{Fin Si}
+\end{addmargin}
+
+\textbf{R3}: \textbf{Comment} "Fusionner les deux moitiés triées"
+\begin{addmargin}[5em]{0pt}
+    vecteur\_trie <- Copie(vecteur) \\
+    i <- début \\
+    j <- milieu + 1 \\
+    \textbf{Tant Que} i < milieu+1  \textbf{Et}  j  < fin+1 \textbf{faire}
+    \begin{addmargin}[3em]{0pt}
+        Copier min(vecteur[i],vecteur[j]) dans vecteur\_trie et incrémenter i ou j en fonction \\
+        \hspace*{0pt}\hfill \textbf{in-out} : i,j; \textbf{in}: Opérateur, Vecteur; \textbf{out}: vecteur\_trie
+    \end{addmargin}
+    \textbf{Fin TQ} \\
+    Recopier vecteur\_trie dans vecteur
+    \hspace*{0pt}\hfill \textbf{in-out} : vecteur\_trie; \textbf{in}: i,j;\textbf{out}: Vecteur
+\end{addmargin}
+
+\textbf{R4}: \textbf{Comment} "Copier min(vecteur[i],vecteur[j]) et incrémenter i ou j" ?
+\begin{addmargin}[5em]{0pt}
+    \textbf{Si} vecteur[i] et vecteur[j] < vecteur[j] \textbf{Alors}
+    \begin{addmargin}[3em]{0pt}
+        vecteur\_trie[j-milieu+i]<- vecteur[i] \\
+        i <- i+1
+    \end{addmargin}
+    \textbf{Sinon}
+    \begin{addmargin}[3em]{0pt}
+        vecteur\_trie[j-milieu+i]<- vecteur[j] \\
+        j <- j+1
+    \end{addmargin}
+    \textbf{Fin Si}
+\end{addmargin}
+
+\textbf{R4}: \textbf{Comment} "Recopier vecteur\_trie dans vecteur" ?
+\begin{addmargin}[5em]{0pt}
+    \textbf{Si} i=milieu +1 Alors
+    \begin{addmargin}[3em]{0pt}
+        vecteur[deb:j]<-vecteur\_trie[deb:j]
+    \end{addmargin}
+    \textbf{Sinon}
+    \begin{addmargin}[3em]{0pt}
+        vecteur\_trie[fin-(milieu-i):fin+1] <- vecteur[i:milieu+1] \\
+        vecteur[début:fin] <- vecteur\_trie[début:fin]
+    \end{addmargin}
+    \textbf{Fin Si}
+\end{addmargin}
+\end{document}
+
+
