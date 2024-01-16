@@ -152,7 +152,9 @@ sys     0m0,036s
 
 Nous remarquons alors que malgré les temps d'accès plus lent introduit par la structure de donnée creuse, nous observons une exécution plus rapide en mode creux qu'en mode plein. En effet : la plupart du temps, la matrice étant très creuse, nous permettant d'utiliser cette structure de donnée creuse à son avantage et de laisser de nombreuses opérations inutiles de côtés. C'est cet avantage qui permet un passage à l'échelle et permet de traiter de plus grand graphe.
 
-\section{Grille des raffinages}
+\section{Grilles d'évaluation}
+
+\subsection{Raffinages}
 
 \begin{table}[!ht]
     \centering
@@ -176,6 +178,29 @@ Nous remarquons alors que malgré les temps d'accès plus lent introduit par la 
     \end{tabular}
 \end{table}
 
+\subsection{Code}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|l|l|}
+    \hline
+        ~ & Evaluation Etudiant (I/P/A/+) \\ \hline
+        Le programme ne doit pas contenir d'erreurs de compilation.  & + \\ \hline
+        Le programme doit compiler sans messages d'avertissement. & + \\ \hline
+        Le code doit être bien indenté. & + \\ \hline
+        Les règles de programmation du cours doivent être respectées: & + \\ \hline
+        Pas de code redondant. & A \\ \hline
+        On doit utiliser les structures de contrôle adaptées & + \\ \hline
+        Utiliser des constantes nommées plutôt que des constantes littérales & A \\ \hline
+        Les raffinages doivent être respectés dans le programme. & A \\ \hline
+        Les actions complexes apparaissent en commentaires placés & \\ AVANT les instructions correspondantes & P \\ \hline
+        Une ligne blanche doit séparer les principales actions complexes & + \\ \hline
+        Le rôle des variables doit être explicité à leur déclaration (commentaire). & I \\ \hline
+        Pas de structure de contrôle déguisée & + \\ \hline
+    \end{tabular}
+\end{table}
+
+
 \section{Difficultés rencontrées}
 
 \subsection{Quelle structure de données pour le mode creux ?}
@@ -191,7 +216,12 @@ Dans ce projet, nous nous sommes centrés sur l'efficacité et la rapidité de n
 
 Ensuite, nous avons également amélioré notre implémentation de l'algorithme du tri fusion. De plus, nous avons constaté qu'à chaque fois que nous utilisons le tri, c'était sûr des matrices complètement remplies sans 0, alors nous avons déduit qu'il était intéressant d'utiliser des matrices utilisant la structure de donnée pleine pour le tri permettant alors un tri plus rapide.
 
-Enfin, le gros de l'optimisation reste dans l'itération de Page Rank, en effet :  nous nous sommes rendu compte qu'il n'était pas nécessaire de calculer à chaque fois la matrice G, mais que nous pouvions tout faire dans le produit. Cependant, cette première solution, a pour effet d'avoir deux boucles imbriquées, et donc une complexité en $n^2$, ce qu'on a alors cherché à réduire.  \\ Nous avons alors observé que nous pouvions calculer au préalable les termes du produit itératif correspondant aux lignes vides pour pouvoir uniquement les ajouter au nouveau coefficient de $\pi$ à chaque produit. Cette première implantation reparcourait le tableau contenant le nombre de coefficients de chaque ligne a chaque itération et nous avions une complexité de $2n$.  Au final, nous avons introduit un tableau contenant uniquement les liste vide dans le type matrice afin de réduire les nombres d'itérations inutiles dès la seconde itération une fois que celui-ci était peuplé.
+Enfin, le gros de l'optimisation reste dans l'itération de Page Rank, en effet :  nous nous sommes rendu compte qu'il n'était pas nécessaire de calculer la matrice G une fois pour toute dès le début du programme. Nous avons choisi de tout faire en direct dans le produit itératif $\pi * G$. Cependant, cette première solution, a pour effet d'avoir deux boucles imbriquées, et donc une complexité en $n^2$, ce qu'on a alors cherché à réduire.  \\ 
+Nous avons alors observé que nous pouvions calculer au préalable les termes du produit itératif correspondant aux lignes vides pour pouvoir uniquement les ajouter au nouveau coefficient de $\pi$ à chaque produit, les lignes vides correspondant au terme $\frac{1-\alpha }{N}A$ où $A$ est la matrice d'Attila: \\
+\begin{center}
+$G = S\alpha + \frac{1-\alpha }{N}A $
+\end{center}
+Cette première implantation reparcourait le tableau contenant le nombre de coefficients de chaque ligne a chaque itération et nous avions une complexité de $2n$.  Au final, nous avons introduit un tableau contenant uniquement les liste vide dans le type matrice afin de réduire les nombres d'itérations inutiles dès la seconde itération une fois que celui-ci était peuplé.
 
 Ces différentes optimisations nous ont permis de passer d'un temps d'exécution pour \textit{linux26.net} de près de 45 heures à seulement 2 minutes et 30 secondes, une amélioration très satisfaisante.  
 
@@ -237,5 +267,4 @@ Ce fut une expérience enrichissante avec un sujet intéressant, mais nous avons
 \end{table}
 
 \end{document}
-
 
