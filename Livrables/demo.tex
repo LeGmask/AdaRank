@@ -1,0 +1,84 @@
+\LoadClass{NewTeX}
+\documentclass{NewTeX}
+\usepackage[utf8]{inputenc}
+\usepackage{tabularx}
+\title{Projet PageRank \\ Script de démonstration}
+\author{\'Equipe  EF7 : Evann DREUMONT  et  Timothée KLEIN}
+\date{Décembre 2023}
+
+\begin{document}
+
+\maketitle
+
+\section{Benchmark}
+
+Lors de la démonstration, nous allons tout d'abord lancer le script de benchmark pour montrer que le script fonctionne pour chacun des fichiers networks :  
+
+\begin{code}{sh}
+./benchmark.sh
+\end{code}
+
+\section{Tests de la robustess}
+
+En parallèle du benchmark, nous allons démontrer de la robustesse de notre programme, nous allons exécuter différentes commandes ne fonctionnant pas, ou en prenant des fichiers n'étant pas conforme.
+
+\subsection{Commandes invalides}
+
+\begin{code}{sh}
+make run ARGS="-K aaaaaaa test.net"
+\end{code}
+
+\begin{code}{sh}
+make run ARGS="-A aaaaaaa test.net"
+\end{code}
+
+\begin{code}{sh}
+make run ARGS="-E aaaaaaa test.net"
+\end{code}
+
+\begin{code}{sh}
+make run ARGS="-K -1 test.net"
+\end{code}
+
+\begin{code}{sh}
+make run ARGS="-A 2 test.net"
+\end{code}
+
+\begin{code}{sh}
+make run ARGS="-E -8 test.net"
+\end{code}
+
+\begin{code}{sh}
+make run ARGS="-LOLOL -8 test.net"
+\end{code}
+
+\subsection{Fichier invalides}
+
+\begin{code}{sh}
+make run ARGS="jenexistepas.net"
+\end{code}
+
+Nous allons changer le fichier test.net pour ajouter un lien qui implique un nœud qui n'existe pas.
+
+\begin{code}{sh}
+make run ARGS="networks/test.net"
+\end{code}
+
+
+\section{Démonstration du bon fonctionnement de notre programme}
+
+Pour cette partie, nous utiliserons le script python qui nous permet de faire une visualisation :
+
+\begin{code}{sh}
+cd vizualizer && poetry shell && cd ../
+python vizualizer/main.py
+\end{code}
+
+Nous allons à présent montrer que notre programme est bien fonctionnel, en rajoutant tout d'abord une page qui référence plein de page, puis une page très référencée.
+
+Pour finir, nous allons montrer que le programme en mode plein et creux fournis des résultats similaires.
+\begin{code}{sh}
+make run ARGS="networks/sujet.net"
+make run ARGS="-C networks/sujet.net"
+\end{code}
+\end{document}
