@@ -242,28 +242,29 @@ begin
 
    --! Vérifier si les arguments sont valides
 exception
-   when PAS_DE_FICHIER =>
+   when PAS_DE_FICHIER   =>
       Put_Line ("Pas de fichier fourni, veuillez relire votre appel");
       Help;
-   when ALPHA_INVALIDE =>
+   when ALPHA_INVALIDE   =>
       Put_Line ("Alpha invalide, veuillez relire votre appel");
       Help;
-   when EPS_INVALIDE   =>
+   when EPS_INVALIDE     =>
       Put_Line ("Epsilon invalide, veuillez relire votre appel");
       Help;
-   when K_INVALIDE     =>
+   when K_INVALIDE       =>
       Put_Line ("K invalide, veuillez relire votre appel");
       Help;
-   when SYNTAXE        =>
+   when SYNTAXE          =>
       Put_Line ("Syntaxe invalide, veuillez relire votre appel");
       Help;
-   when Name_Error     =>
+   when Name_Error       =>
       Put_Line
         ("Emplacement du fichier .net invalide, veuillez relire votre appel");
       Help;
    when FICHIER_INVALIDE =>
-      Put_Line ("Contenu du fichier .net fourni invalide, veuillez le vérifier");
-   when End_Error =>
+      Put_Line
+        ("Contenu du fichier .net fourni invalide, veuillez le vérifier");
+   when End_Error        =>
       Put_Line ("Fichier .net vide, veuillez le remplir");
    -- when others               =>
    --   null;

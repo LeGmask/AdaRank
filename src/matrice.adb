@@ -110,7 +110,9 @@ package body Matrice is
             Set (Mat, Sommet_Courant, J, Un);
           end if;
         exception
-          when others =>
+          when End_Error =>
+            null;
+          when others    =>
             raise FICHIER_INVALIDE;
         end;
       end loop;
