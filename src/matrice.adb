@@ -97,14 +97,9 @@ package body Matrice is
 
           Get (File, I); -- on récupère l'arète actuelle
           Get (File, J); -- on récupère la colonne
-          J :=
-           J + 1; -- on décale de 1 pour avoir un indice dans le bon intervalle
+          -- on décale de 1 pour avoir un indice dans le bon intervalle
+          J := J + 1;
           I := I + 1;
-
-          -- Vérifier que I et J sont valides
-          if not (1 <= I and I <= N_Lig and 1 <= J and J <= N_Col) then
-            raise FICHIER_INVALIDE;
-          end if;
 
           if I /= J then
             if I /= Sommet_Courant then
@@ -115,8 +110,8 @@ package body Matrice is
             Set (Mat, Sommet_Courant, J, Un);
           end if;
         exception
-          when End_Error =>
-            null;
+          when others =>
+            raise FICHIER_INVALIDE;
         end;
       end loop;
     end Init_Fichier_Plein;

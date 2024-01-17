@@ -263,6 +263,8 @@ exception
       Help;
    when FICHIER_INVALIDE =>
       Put_Line ("Contenu du fichier .net fourni invalide, veuillez le vérifier");
+   when End_Error =>
+      Put_Line ("Fichier .net vide, veuillez le remplir");
    -- when others               =>
    --   null;
 end Page_Rank;
