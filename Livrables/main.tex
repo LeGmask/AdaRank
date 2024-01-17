@@ -266,5 +266,45 @@ Ce fut une expérience enrichissante avec un sujet intéressant, mais nous avons
      \end{tabular} 
 \end{table}
 
+\subsection{Script de visualisation}
+
+Afin de rendre la démonstration plus agréable, nous avons décidé d'écrire un script python permettant à l'aide du paquet \textit{pyvis} de montrer les résultats du page rank.
+
+Il commence par lancer le projet avec le fichier \textit{sujet.net} : 
+
+\begin{code}{python}
+from pyvis.network import Network
+import os
+
+nt = Network('100vh', '100%')
+
+# run page_rank using cli
+
+os.system("make run ARGS=\"networks/sujet.net\"")
+\end{code}
+
+Puis le script s'occupe de parser les poids et les nœuds correspondant puis rajoute les liens et affiche dans une page web le résultat : 
+
+\begin{code}{python}
+with open("output.pr") as noeuds:
+    with open("output.prw") as scores:
+        # skip first line of scores
+        scores.readline()
+
+        for noeud, score in zip(noeuds, scores):
+            nt.add_node(int(noeud), label=noeud, size=float(score)*100)
+
+with open("networks/sujet.net") as f:
+    # skip first line
+    f.readline()
+
+    for idx, line in enumerate(f):
+        line = line.split()
+        
+        nt.add_edge(int(line[0]), int(line[1]))
+
+nt.show('graph.html', notebook=False)
+\end{code}
+
 \end{document}
 
