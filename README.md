@@ -23,7 +23,7 @@ $ make run_test
 ```
 
 ## Tree
-
+```
 .
 ├── benchmark.sh
 ├── Livrables
@@ -61,3 +61,4 @@ $ make run_test
     ├── main.py
     ├── poetry.lock
     └── pyproject.toml
+```
